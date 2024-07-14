@@ -1,0 +1,42 @@
+on: ["push", "pull_request"]
+name: Test Coveralls
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+    - uses: actions/checkout@main
+    - name: Setup Python
+      uses: actions/setup-python@main
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: git config
+      run: |
+        git config user.username edwardtheharris
+        git config user.name 'Xander Harris'
+        git config user.email 'xandertheharris@gmail.com'
+        git checkout -b 123-feature-branch-test
+    - name: Install Dependencies
+      run: |
+        pip3 install -U pip pipenv
+        pipenv requirements --dev > reqs
+        pip3 install -r reqs
+        pytest --cov
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel: true
+        flag-name: run-${{ matrix.python-version }}
+
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v1
+        with:
+            parallel-finished: true
+            carryforward: "run-3.8,run-3.9,run-3.10,run-3.11,run-3.12"

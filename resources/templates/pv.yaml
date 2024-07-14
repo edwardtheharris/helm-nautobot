@@ -1,0 +1,57 @@
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   labels:
+#     name: nautobot-static
+#     nautobot-storage: static
+#     type: local
+#   name: nautobot-static
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   capacity:
+#     storage: 1Gi
+#   hostPath:
+#     path: "/srv/k8s/k8s01/volumes/nautobot/static"
+#   storageClassName: manual
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  capacity:
+    storage: {{ .Values.persistence.size }}
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: {{ .Values.persistence.storageClass }}
+  local:
+    path: /mnt/k8s/psql
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+              - k8s01.brick-house.org
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   labels:
+#     name: nautobot-redis
+#     nautobot-storage: redis
+#     type: local
+#   name: nautobot-redis
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   capacity:
+#     storage: 8Gi
+#   hostPath:
+#     path: "/srv/k8s/k8s01/volumes/nautobot/redis"
+#   storageClassName: manual

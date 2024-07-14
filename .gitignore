@@ -1,0 +1,7 @@
+venv/
+.gnupg/
+*.xml
+.values.yaml
+.vscode/
+_build
+.venv/

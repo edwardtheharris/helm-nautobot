@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+loguru = "*"
+gitpython = "*"
+zerovm-sphinx-theme = "*"
+
+[dev-packages]
+sphinx = "*"
+sphinx-autobuild = "*"
+myst-parser = {extras = ["linkify"], version = "*"}
+sphinx-design = "*"
+"sphinxcontrib.autoyaml" = "*"
+sphinx-nefertiti = "*"
