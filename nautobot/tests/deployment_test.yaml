@@ -1,20 +1,20 @@
 ###
-# ```{rubric} StatefulSet Test Suite
+# ```{rubric} Deployment Test Suite
 # ```
 # ---
-# Tests to validate the deployment of the described StatefulSet.
-suite: test for statefulset
+# Tests to validate the deployment of the described Deployment.
+suite: test for deployment
 templates:
-  - statefulset.yaml
+  - deployment.yaml
 tests:
   - asserts:
       - isKind:
-          of: StatefulSet
+          of: Deployment
       - equal:
           path: metadata.name
-          pattern: postgres
-    it: should be a StatefulSet
+          pattern: nautobot
+    it: should be a Deployment
     set:
-      postgresql:
-        name: postgres
+      nautobot:
+        name: nautobot
 
