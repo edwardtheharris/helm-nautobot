@@ -1,9 +1,9 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.nautobot.ingress.enabled -}}
 {{- $fullName := include "nautobot.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+{{- $svcPort := .Values.nautobot.service.port -}}
+{{- if and .Values.nautobot.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.nautobot.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.nautobot.ingress.annotations "kubernetes.io/ingress.class" .Values.nautobot.ingress.className}}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -18,17 +18,17 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "nautobot.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.nautobot.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.className }}
+  {{- if and .Values.nautobot.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.nautobot.ingress.className }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.nautobot.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range .Values.nautobot.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -37,7 +37,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
+    {{- range .Values.nautobot.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:

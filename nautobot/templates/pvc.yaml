@@ -5,7 +5,7 @@ metadata:
   annotations:
     name: nautobot
     app.kubernetes.io/name: nautobot
-    volume.kubernetes.io/storage-provisioner: {{ .Values.persistence.storageClass }}
+    volume.kubernetes.io/storage-provisioner: {{ .Values.nautobot.persistence.storageClass }}
   finalizers:
     - kubernetes.io/pvc-protection
   labels:

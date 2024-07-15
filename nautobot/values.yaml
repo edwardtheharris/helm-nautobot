@@ -19,10 +19,9 @@ nautobot:
     # targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   database:
-    database: postgres
+    database: nautobot
     name: postgres
-    password: postgres
-    username: postgres
+    username: nautobot
   fullnameOverride: "nautobot"
   image:
     pullPolicy: IfNotPresent
@@ -114,9 +113,13 @@ nautobot:
     create: true
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
-    name: "postgres"
+    name: "nautobot"
+  superUser:
+    create: true
+    email: nautobot@nautobot.svc.cluster.local
+    name: nautobot
   tolerations: []
-  type: StatefulSet
+  type: Deployment
   # Additional volumeMounts on the output Deployment definition.
   volumeMounts:
   - mountPath: "/mnt/k8s/psql"

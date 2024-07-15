@@ -1,14 +1,15 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nautobot.name" }}
+  name: {{ .Values.nautobot.fullnameOverride }}
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "nautobot.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   serviceName: "{{ include "nautobot.fullname" . }}"
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.nautobot.replicaCount }}
   template:
     metadata:
       labels:
@@ -17,29 +18,37 @@ spec:
     spec:
       containers:
         - name: nautobot
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.nautobot.image.repository }}:{{ .Values.nautobot.image.tag }}"
+          imagePullPolicy: {{ .Values.nautobot.image.pullPolicy }}
           ports:
-            - containerPort: 5432
+            - containerPort: 8000
               name: nautobot
           env:
+            - name: NAUTOBOT_CREATE_SUPERUSER
+              value: {{ .Values.nautobot.superUser.create | quote }}
+            - name: NAUTOBOT_SUPERUSER_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: superuser
+                  key: token
+            - name: NAUTOBOT_SUPERUSER_EMAIL
+              value: {{ .Values.nautobot.superUser.email }}
+            - name: NAUTOBOT_SUPERUSER_NAME
+              value: {{ .Values.nautobot.superUser.name }}
+            - name: NAUTOBOT_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: superuser
+                  key: password
             - name: POSTGRES_DB
-              value: "{{ .Values.nautobot.database }}"
+              value: {{ .Values.nautobot.database.database }}
             - name: POSTGRES_USER
-              value: "{{ .Values.nautobot.username }}"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: nautobot-secret
-                  key: nautobot-password
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/nautobot/data
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: {{ .Values.persistence.size }}
+                  name: postgres
+                  key: password
