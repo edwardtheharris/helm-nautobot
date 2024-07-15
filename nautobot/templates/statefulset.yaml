@@ -1,6 +1,6 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Values.nautobot.fullnameOverride }}
 spec:
@@ -24,8 +24,16 @@ spec:
             - containerPort: 8000
               name: nautobot
           env:
+            - name: NAUTOBOT_ALLOWED_HOSTS
+              value: {{ .Values.nautobot.config.allowed_hosts | quote }}
+            - name: NAUTOBOT_CACHES_BACKEND
+              value: {{ .Values.nautobot.config.caches_backend }}
             - name: NAUTOBOT_CREATE_SUPERUSER
               value: {{ .Values.nautobot.superUser.create | quote }}
+            - name: NAUTOBOT_REDIS_HOST
+              value: redis.redis.svc.cluster.local
+            - name: NAUTOBOT_REDIS_SCHEME
+              value: redis
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -52,3 +60,19 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: password
+          volumeMounts:
+            - name: config
+              mountPath: /opt/nautobot/
+            - name: git
+              mountPath: /opt/nautobot/
+              read_only: false
+      volumes:
+        - name: config
+          configMap:
+            name: nautobot-config
+            items:
+              - key: nautobot_config.py
+                path: nautobot_config.py
+        - name: git
+          persistentVolumeClaim:
+            claimName: git

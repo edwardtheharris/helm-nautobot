@@ -7,6 +7,8 @@ name = "pypi"
 loguru = "*"
 gitpython = "*"
 zerovm-sphinx-theme = "*"
+pipenv = "*"
+nautobot = "*"
 
 [dev-packages]
 sphinx = "*"
