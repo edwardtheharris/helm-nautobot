@@ -8,7 +8,7 @@ nautobot:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
         - matchExpressions:
-            - key: application
+            - key: nautobot.app.kubernetes.io
               operator: In
               values:
                 - true
@@ -23,23 +23,21 @@ nautobot:
     name: postgres
     password: postgres
     username: postgres
-
   fullnameOverride: "nautobot"
   image:
     pullPolicy: IfNotPresent
     repository: networktocode/nautobot
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "16-alpine"
-
+    tag: "latest"
   imagePullSecrets: []
   ingress:
     annotations:
       kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-    className: ""
-    enabled: false
+    className: "nginx"
+    enabled: true
     hosts:
-    - host: pg.svc.cluster.local
+    - host: nautobot.svc.cluster.local
       paths:
       - path: /
         pathType: ImplementationSpecific
@@ -47,7 +45,6 @@ nautobot:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-
   livenessProbe:
     exec:
       command:
@@ -62,8 +59,8 @@ nautobot:
   nameOverride: "nautobot"
   nodeSelector: {}
   persistence:
-    size: 50Gi
-    storageClass: local
+    size: 5Gi
+    storageClass: usb
   podAnnotations: {}
   podLabels:
     app: nautobot
@@ -105,7 +102,7 @@ nautobot:
   # runAsNonRoot: true
   # runAsUser: 1000
   service:
-    port: 5432
+    port:
     type: ClusterIP
   serviceAccount:
     # Annotations to add to the service account

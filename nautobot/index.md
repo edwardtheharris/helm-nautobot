@@ -1,20 +1,22 @@
 ---
-abstract: Chart, values and templates.
+abstract: Nautobot chart, values and templates.
 authors: Xander Harris
 date: 2024-04-28
-title: Chart and Templates
+title: Nautobot Chart and Templates
 ---
 
 ## Usage
 
-Typical Helm chart rules.
+Deploy this chart using Helm. The current iteration expects a PostgreSQL
+instance to be running in the `postgres` namespace and a Redis instance to be
+running in the `redis` namespace.
 
 ### Chart
 
-```{autoyaml} resources/Chart.yaml
+```{autoyaml} nautobot/Chart.yaml
 ```
 
 #### Values
 
-```{autoyaml} resources/values.yaml
+```{autoyaml} nautobot/values.yaml
 ```
