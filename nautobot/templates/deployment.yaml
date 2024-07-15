@@ -16,12 +16,12 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
-        - name: postgres
+        - name: nautobot
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5432
-              name: postgres
+              name: nautobot
           env:
             - name: POSTGRES_DB
               value: "{{ .Values.nautobot.database }}"

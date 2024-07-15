@@ -102,7 +102,7 @@ nautobot:
   # runAsNonRoot: true
   # runAsUser: 1000
   service:
-    port:
+    port: 8000
     type: ClusterIP
   serviceAccount:
     # Annotations to add to the service account

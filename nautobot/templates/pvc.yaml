@@ -4,6 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   annotations:
     name: nautobot
+    app.kubernetes.io/name: nautobot
     volume.kubernetes.io/storage-provisioner: {{ .Values.persistence.storageClass }}
   finalizers:
     - kubernetes.io/pvc-protection
@@ -18,6 +19,6 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
-  storageClassName: usb
+      storage: {{ .Values.nautobot.persistence.size }}
+  storageClassName: {{ .Values.nautobot.persistence.storageClass }}
   volumeMode: Filesystem
