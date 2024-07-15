@@ -1,32 +1,32 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if .Values.nautobot.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "postgresql.fullname" . }}
+  name: {{ include "nautobot.fullname" . }}
   labels:
-    {{- include "postgresql.labels" . | nindent 4 }}
+    {{- include "nautobot.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "postgresql.fullname" . }}
-  minReplicas: {{ .Values.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+    name: {{ include "nautobot.fullname" . }}
+  minReplicas: {{ .Values.nautobot.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.nautobot.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.nautobot.autoscaling.targetCPUUtilizationPercentage }}
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+          averageUtilization: {{ .Values.nautobot.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- if .Values.nautobot.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+          averageUtilization: {{ .Values.nautobot.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}
