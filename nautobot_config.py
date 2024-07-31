@@ -1,6 +1,5 @@
 """Nautobot configuration settings."""
 import os
-import sys
 
 from nautobot.core.settings import *  # noqa F401,F403
 from nautobot.core.settings_funcs import is_truthy, parse_redis_connection

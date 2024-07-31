@@ -38,7 +38,6 @@ exclude_patterns = [
     '.venv/*',
     '.tmp/*',
     '.pytest_cache/*',
-    'resources/templates/NOTES.txt',
 ]
 
 extensions = [
