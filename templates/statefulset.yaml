@@ -66,7 +66,7 @@ spec:
             - name: git
               mountPath: /opt/nautobot/
               read_only: false
-      volumes:
+      volumeClaimTemplates:
         - name: config
           configMap:
             name: nautobot-config
