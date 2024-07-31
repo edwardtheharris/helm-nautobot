@@ -13,8 +13,11 @@ import version_query
 
 def get_release():
     """Query the current release for the project."""
-    repo_path = Path('.')
-    ret_value = version_query.git_query.query_git_repo(repo_path).to_str()
+    try:
+        repo_path = Path('.')
+        ret_value = version_query.git_query.query_git_repo(repo_path).to_str()
+    except ValueError:
+        ret_value = version_query.Version.from_str('0.0.1').to_str()
     return ret_value
 
 author = 'Xander Harris'

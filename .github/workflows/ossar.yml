@@ -11,7 +11,7 @@
 # with GitHub code scanning. For documentation, or to provide feedback, visit
 # https://github.com/github/ossar-action
 #
-# ```{literalinclude} .github/workflows/ossar.yml
+# ```{literalinclude} /.github/workflows/ossar.yml
 # :language: yaml
 # :start-at: "name: OSSAR\n"
 # :end-before: "###\n"
@@ -34,7 +34,7 @@ on:
 # ---
 # Define the jobs necessary for a useful ossar run.
 #
-# ```{literalinclude} .github/workflows/ossar.yml
+# ```{literalinclude} /.github/workflows/ossar.yml
 # :language: yaml
 # :start-at: "jobs:\n"
 # ```
