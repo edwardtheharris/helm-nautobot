@@ -40,25 +40,25 @@ To install this chart follow these steps.
 
 1. Create a namespace.
 
-   ```shell
+   ```{code-block} shell
    kubectl create ns nautobot
    ```
 
 2. Install the unittest Helm plugin.
 
-   ```shell
+   ```{code-block} shell
    helm plugin install https://github.com/helm-unittest/helm-unittest
    ```
 
 3. Run the unit tests.
 
-   ```shell
+   ```{code-block} shell
    helm unittest -f 'tests/*.yaml' .
    ```
 
    You should see output similar to this.
 
-   ```shell
+   ```{code-block} shell
    ### Chart [ nautobot ] .
 
    PASS  nautobot Service Test Suite    tests/service_test.yaml
@@ -74,13 +74,13 @@ To install this chart follow these steps.
 
 4. Install the chart with Helm.
 
-   ```shell
+   ```{code-block} shell
    helm -n nautobot install nautobot .
    ```
 
 5. Run the tests included with Helm.
 
-   ```shell
+   ```{code-block} shell
    helm -n nautobot test nautobot
    ```
 
@@ -88,7 +88,7 @@ To install this chart follow these steps.
 
 This can be done in the usual way.
 
-```shell
+```{code-block} shell
 helm -n nautobot uninstall nautobot
 ```
 
