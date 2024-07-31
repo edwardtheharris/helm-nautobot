@@ -125,7 +125,7 @@ superUser:
   email: nautobot@nautobot.svc.cluster.local
   name: nautobot
 tolerations: []
-type: Deployment
+type: StatefulSet
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
 # - mountPath: "/mnt/k8s/psql"

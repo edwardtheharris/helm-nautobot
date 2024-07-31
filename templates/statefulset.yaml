@@ -1,4 +1,4 @@
----
+{{- if eq .Values.type "StatefulSet" -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -76,3 +76,4 @@ spec:
         - name: git
           persistentVolumeClaim:
             claimName: git
+{{ end }}
