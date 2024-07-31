@@ -23,3 +23,4 @@
 .vscode/
 .venv/
 _build/
+.gnupg/
