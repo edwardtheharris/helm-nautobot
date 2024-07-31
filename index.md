@@ -11,18 +11,13 @@ title: Template Helm Chart
 
 ## Repository Contents
 
-```{toctree}
-:maxdepth: 2
-
-manifests/index
-resources/index
-workflows/index
+```{contents}
 ```
 
-### Meta Contents
-
 ```{toctree}
-cicd
+:caption: meta
+
+.github/index
 license
 readme
 security
@@ -33,3 +28,17 @@ security
 * {ref}`genindex`
 * {ref}`modindex`
 * {ref}`search`
+
+## Usage
+
+Typical Helm chart rules.
+
+### Chart
+
+```{autoyaml} Chart.yaml
+```
+
+#### Values
+
+```{autoyaml} values.yaml
+```
