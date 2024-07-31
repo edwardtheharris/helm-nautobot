@@ -6,7 +6,7 @@ apiVersion: v2
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
 description: A Helm to deploy nautobot
-icon: file://./assets/icon/postgresql.jpeg
+icon: file://./_static/img/nautobot.png
 name: nautobot
 ###
 # A chart can be either an 'application' or a 'library' chart.
