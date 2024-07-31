@@ -5,7 +5,7 @@ apiVersion: v2
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
-description: A Helm chart for Kubernetes
+description: A Helm to deploy nautobot
 icon: file://./assets/icon/postgresql.jpeg
 name: nautobot
 ###
