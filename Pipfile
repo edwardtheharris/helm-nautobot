@@ -4,16 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-loguru = "*"
 gitpython = "*"
-zerovm-sphinx-theme = "*"
+loguru = "*"
 pipenv = "*"
-nautobot = "*"
 
 [dev-packages]
+"sphinxcontrib.autoyaml" = "*"
+myst-parser = {extras = ["linkify"], version = "*"}
 sphinx = "*"
 sphinx-autobuild = "*"
-myst-parser = {extras = ["linkify"], version = "*"}
 sphinx-design = "*"
-"sphinxcontrib.autoyaml" = "*"
-sphinx-nefertiti = "*"
+sphinx-book-theme = "*"
+version-query = "*"
