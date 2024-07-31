@@ -1,3 +1,4 @@
+{{ if .Values.persistence.claim.enabled }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -47,3 +48,4 @@ spec:
       storage: 10Gi
   storageClassName: usb
   volumeMode: Filesystem
+{{ end }}

@@ -1,8 +1,8 @@
 """Nautobot configuration settings."""
 import os
 
-from nautobot.core.settings import *  # noqa F401,F403
-from nautobot.core.settings_funcs import is_truthy, parse_redis_connection
+from nautobot.core.settings_funcs import is_truthy
+from nautobot.core.settings_funcs import parse_redis_connection
 
 #########################
 #                       #
@@ -10,8 +10,10 @@ from nautobot.core.settings_funcs import is_truthy, parse_redis_connection
 #                       #
 #########################
 
-# This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot server. Nautobot will not permit write
-# access to the server via any other hostnames. The first FQDN in the list will be treated as the preferred name.
+# This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
+# server. Nautobot will not permit write
+# access to the server via any other hostnames. The first FQDN in the list will
+# be treated as the preferred name.
 #
 # Example: ALLOWED_HOSTS = ['nautobot.example.com', 'nautobot.internal.local']
 #
@@ -38,7 +40,8 @@ CACHES = {
 # Number of seconds to cache ContentType lookups. Set to 0 to disable caching.
 # CONTENT_TYPE_CACHE_TIMEOUT = int(os.getenv("NAUTOBOT_CONTENT_TYPE_CACHE_TIMEOUT", "0"))
 
-# Celery Beat heartbeat file path - will be touched by Beat each time it wakes up as a proof-of-health.
+# Celery Beat heartbeat file path - will be touched by Beat each time it wakes
+# up as a proof-of-health.
 # CELERY_BEAT_HEARTBEAT_FILE = os.getenv(
 #     "NAUTOBOT_CELERY_BEAT_HEARTBEAT_FILE",
 #     os.path.join(tempfile.gettempdir(), "nautobot_celery_beat_heartbeat"),
@@ -46,7 +49,8 @@ CACHES = {
 
 # Celery broker URL used to tell workers where queues are located
 #
-# CELERY_BROKER_URL = os.getenv("NAUTOBOT_CELERY_BROKER_URL", parse_redis_connection(redis_database=0))
+CELERY_BROKER_URL = os.getenv(
+    "NAUTOBOT_CELERY_BROKER_URL", parse_redis_connection(redis_database=0))
 
 # Optional configuration dict for Celery to use custom SSL certificates to connect to Redis.
 #

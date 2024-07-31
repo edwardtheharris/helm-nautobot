@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.nautobot.fullnameOverride }}
+  name: {{ .Values.fullnameOverride }}
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "nautobot.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   serviceName: "{{ include "nautobot.fullname" . }}"
-  replicas: {{ .Values.nautobot.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
@@ -18,18 +18,18 @@ spec:
     spec:
       containers:
         - name: nautobot
-          image: "{{ .Values.nautobot.image.repository }}:{{ .Values.nautobot.image.tag }}"
-          imagePullPolicy: {{ .Values.nautobot.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8000
               name: nautobot
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
-              value: {{ .Values.nautobot.config.allowed_hosts | quote }}
+              value: {{ .Values.config.allowed_hosts | quote }}
             - name: NAUTOBOT_CACHES_BACKEND
-              value: {{ .Values.nautobot.config.caches_backend }}
+              value: {{ .Values.config.caches_backend }}
             - name: NAUTOBOT_CREATE_SUPERUSER
-              value: {{ .Values.nautobot.superUser.create | quote }}
+              value: {{ .Values.superUser.create | quote }}
             - name: NAUTOBOT_REDIS_HOST
               value: redis.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
@@ -40,16 +40,16 @@ spec:
                   name: superuser
                   key: token
             - name: NAUTOBOT_SUPERUSER_EMAIL
-              value: {{ .Values.nautobot.superUser.email }}
+              value: {{ .Values.superUser.email }}
             - name: NAUTOBOT_SUPERUSER_NAME
-              value: {{ .Values.nautobot.superUser.name }}
+              value: {{ .Values.superUser.name }}
             - name: NAUTOBOT_SUPERUSER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: superuser
                   key: password
             - name: POSTGRES_DB
-              value: {{ .Values.nautobot.database.database }}
+              value: {{ .Values.database.database }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

@@ -5,10 +5,10 @@ metadata:
   labels:
     {{- include "nautobot.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.nautobot.service.type }}
+  type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.nautobot.service.port }}
-      targetPort: 5432
+    - port: {{ .Values.service.port }}
+      targetPort:
       protocol: TCP
       name: nautobot
   selector:

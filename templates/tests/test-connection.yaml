@@ -5,11 +5,12 @@ metadata:
   labels:
     {{- include "nautobot.labels" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": test
+    helm.sh/hook: test
+    helm.sh/hook-delete-policy: hook-succeeded
 spec:
   containers:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "nautobot.fullname" . }}:{{ .Values.nautobot.service.port }}']
+      args: ['{{ include "nautobot.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never
