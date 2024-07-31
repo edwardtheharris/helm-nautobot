@@ -26,7 +26,7 @@ This repository runs the following GitHub Actions
 ```{autoyaml} .github/workflows/ossar.yml
 ```
 
-## Pages
+### Pages
 
 ```{autoyaml} .github/workflows/pages.yml
 ```
