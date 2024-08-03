@@ -59,20 +59,21 @@ CELERY_BROKER_URL = os.getenv(
 # Database configuration. See the Django documentation for a complete list of available parameters:
 #   https://docs.djangoproject.com/en/stable/ref/settings/#databases
 #
-# DATABASES = {
-#     "default": {
-#         "NAME": os.getenv("NAUTOBOT_DB_NAME", "nautobot"),  # Database name
-#         "USER": os.getenv("NAUTOBOT_DB_USER", ""),  # Database username
-#         "PASSWORD": os.getenv("NAUTOBOT_DB_PASSWORD", ""),  # Database password
-#         "HOST": os.getenv("NAUTOBOT_DB_HOST", "localhost"),  # Database server
-#         "PORT": os.getenv("NAUTOBOT_DB_PORT", ""),  # Database port (leave blank for default)
-#         "CONN_MAX_AGE": int(os.getenv("NAUTOBOT_DB_TIMEOUT", "300")),  # Database timeout
-#         "ENGINE": os.getenv(
-#             "NAUTOBOT_DB_ENGINE",
-#             "django_prometheus.db.backends.postgresql" if METRICS_ENABLED else "django.db.backends.postgresql",
-#         ),  # Database driver ("mysql" or "postgresql")
-#     }
-# }
+DATABASES = {
+    "default": {
+        "NAME": os.getenv("NAUTOBOT_DB_NAME", "nautobot"),  # Database name
+        "USER": os.getenv("NAUTOBOT_DB_USER", ""),  # Database username
+        "PASSWORD": os.getenv("NAUTOBOT_DB_PASSWORD", ""),  # Database password
+        "HOST": os.getenv("NAUTOBOT_DB_HOST", "localhost"),  # Database server
+        "PORT": os.getenv("NAUTOBOT_DB_PORT", ""),  # Database port (leave blank for default)
+        "CONN_MAX_AGE": int(os.getenv("NAUTOBOT_DB_TIMEOUT", "300")),  # Database timeout
+        "ENGINE": os.getenv(
+            "NAUTOBOT_DB_ENGINE",
+            # "django_prometheus.db.backends.postgresql" if METRICS_ENABLED else "django.db.backends.postgresql",
+            'django.db.backends.postgresql',
+        ),  # Database driver ("mysql" or "postgresql")
+    }
+}
 
 # Ensure proper Unicode handling for MySQL
 #

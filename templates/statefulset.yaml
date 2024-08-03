@@ -14,7 +14,7 @@ spec:
     matchLabels:
       ss.kubernetes.io/name: {{ include "nautobot.name" . }}
       ss.kubernetes.io/instance: {{ .Release.Name }}
-  serviceName: "{{ include "nautobot.fullname" . }}"
+  serviceName: {{ .Values.nameOverride }}
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
@@ -24,6 +24,7 @@ spec:
     spec:
       containers:
         - name: nautobot
+          command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -60,8 +61,6 @@ spec:
               value: redis-0.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
-            - name: NAUTOBOT_ROOT
-              value: /opt/nautobot
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -78,10 +77,12 @@ spec:
                   key: password
           volumeMounts:
             - name: nautobot-config
-              mountPath: /var/nautobot/config
+              mountPath: /opt/nautobot/.nautobot
               readOnly: true
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot/
+      imagePullSecrets:
+        - name: ghcr
       volumes:
         - name: {{ .Values.config.name }}
           configMap:

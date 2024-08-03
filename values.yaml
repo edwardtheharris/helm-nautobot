@@ -34,10 +34,14 @@ database:
 fullnameOverride: "nautobot"
 image:
   pullPolicy: IfNotPresent
-  repository: networktocode/nautobot
+  repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
-imagePullSecrets: []
+  tag: '0.0.1'
+  secret:
+    name: ghcr
+    data: ''
+imagePullSecrets:
+  - name: ghcr
 ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
