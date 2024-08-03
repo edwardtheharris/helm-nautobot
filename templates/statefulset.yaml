@@ -3,20 +3,24 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
-
+    ss.kubernetes.io/name: {{ .Values.nameOverride }}
+    ss.kubernetes.io/instance: {{ .Release.Name }}
+  labels:
+    ss.kubernets.io/name: {{ .Values.nameOverride }}
+    ss.kubernetes.io/instance: {{ .Release.Name }}
   name: {{ .Values.fullnameOverride }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "nautobot.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      ss.kubernetes.io/name: {{ include "nautobot.name" . }}
+      ss.kubernetes.io/instance: {{ .Release.Name }}
   serviceName: "{{ include "nautobot.fullname" . }}"
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "nautobot.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        ss.kubernetes.io/name: {{ include "nautobot.name" . }}
+        ss.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
         - name: nautobot
@@ -32,14 +36,36 @@ spec:
               value: {{ .Values.config.caches_backend }}
             - name: NAUTOBOT_CREATE_SUPERUSER
               value: {{ .Values.superUser.create | quote }}
+            - name: NAUTOBOT_DB_ENGINE
+              value: {{ .Values.database.engine }}
+            - name: NAUTOBOT_DB_HOST
+              value: {{ .Values.database.host }}
+            - name: NAUTOBOT_DB_NAME
+              value: {{ .Values.database.database }}
+            - name: NAUTOBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: password
+            - name: NAUTOBOT_DB_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: NAUTOBOT_DB_TIMEOUT
+              value: {{ .Values.database.timeout | quote }}
+            - name: NAUTOBOT_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: username
             - name: NAUTOBOT_REDIS_HOST
               value: redis-0.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
+            - name: NAUTOBOT_ROOT
+              value: /opt/nautobot
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: superuser
+                  name: {{ .Values.superUser.secret.name }}
                   key: token
             - name: NAUTOBOT_SUPERUSER_EMAIL
               value: {{ .Values.superUser.email }}
@@ -48,41 +74,27 @@ spec:
             - name: NAUTOBOT_SUPERUSER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: superuser
-                  key: password
-            - name: POSTGRES_DB
-              value: {{ .Values.database.database }}
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres
+                  name: {{ .Values.superUser.secret.name }}
                   key: password
           volumeMounts:
-            - name: config
+            - name: nautobot-config
+              mountPath: /var/nautobot/config
+              readOnly: true
+            - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot/
-            - name: git
-              mountPath: /opt/nautobot/
-              read_only: false
-      volumeClaimTemplates:
-        - name: config
+      volumes:
+        - name: {{ .Values.config.name }}
           configMap:
             name: nautobot-config
-            items:
-              - key: nautobot_config.py
-                path: nautobot_config.py
-        - metadata:
-            name: {{ .Values.persistence.name }}
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            resources:
-              requests:
-                storage: {{ .Values.persistence.size }}
-            storageClassName: {{ .Values.persistence.storageClass }}
-            volumeMode: Filesystem
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Values.persistence.name }}
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        volumeMode: Filesystem
 {{ end }}

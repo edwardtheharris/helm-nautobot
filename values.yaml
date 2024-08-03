@@ -20,11 +20,17 @@ autoscaling:
 config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache
+  name: nautobot-config
 database:
   database: nautobot
+  engine: django.db.backends.postgresql
+  host: postgres-0.postgresql.svc.cluster.local
   name: postgres
+  password: "pg_tmp"
+  port: '5432'
   secretfile: secrets/secrets.yaml
-  username: nautobot
+  timeout: '300'
+  username: "pg_tmp"
 fullnameOverride: "nautobot"
 image:
   pullPolicy: IfNotPresent
@@ -117,7 +123,7 @@ service:
 serviceAccount:
   # Annotations to add to the service account
   annotations:
-    service-account.kubernetes.io/name: nautobot
+    sa.kubernetes.io/name: nautobot
   # Automatically mount a ServiceAccount's API credentials?
   automount: true
   # Specifies whether a service account should be created
@@ -129,7 +135,11 @@ superUser:
   create: true
   email: nautobot@nautobot.svc.cluster.local
   name: nb-admin
-  secretfile: secrets/superuser.yaml
+  password: ""
+  secret:
+    name: secret.superuser
+  token: ""
+  username: ""
 tolerations: []
 type: StatefulSet
 # Additional volumeMounts on the output Deployment definition.

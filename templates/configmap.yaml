@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.fullnameOverride }}
+  name: {{ .Values.config.name }}
 data:
     nautobot_config.py: |
 {{ range .Files.Lines "nautobot_config.py" }}{{ . | nindent 6 }}{{ end }}
