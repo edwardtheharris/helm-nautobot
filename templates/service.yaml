@@ -1,15 +1,17 @@
+{{ if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "nautobot.fullname" . }}
+  name: {{ .Values.nameOverride }}
   labels:
-    {{- include "nautobot.labels" . | nindent 4 }}
+    service.kubernetes.io/name: {{ .Values.nameOverride }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort:
+      targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: nautobot
   selector:
-    {{- include "nautobot.selectorLabels" . | nindent 4 }}
+    {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
+{{ end }}

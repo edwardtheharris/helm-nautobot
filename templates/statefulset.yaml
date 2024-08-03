@@ -2,6 +2,8 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  annotations:
+
   name: {{ .Values.fullnameOverride }}
 spec:
   selector:
@@ -31,7 +33,7 @@ spec:
             - name: NAUTOBOT_CREATE_SUPERUSER
               value: {{ .Values.superUser.create | quote }}
             - name: NAUTOBOT_REDIS_HOST
-              value: redis.redis.svc.cluster.local
+              value: redis-0.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
@@ -73,7 +75,14 @@ spec:
             items:
               - key: nautobot_config.py
                 path: nautobot_config.py
-        - name: git
-          persistentVolumeClaim:
-            claimName: git
+        - metadata:
+            name: {{ .Values.persistence.name }}
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: {{ .Values.persistence.size }}
+            storageClassName: {{ .Values.persistence.storageClass }}
+            volumeMode: Filesystem
 {{ end }}

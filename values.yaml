@@ -7,10 +7,10 @@ affinity:
   requiredDuringSchedulingIgnoredDuringExecution:
     nodeSelectorTerms:
       - matchExpressions:
-          - key: nautobot.app.kubernetes.io
+          - key: kubernetes.io/os
             operator: In
             values:
-              - true
+              - linux
 autoscaling:
   enabled: false
   maxReplicas: 0
@@ -23,6 +23,7 @@ config:
 database:
   database: nautobot
   name: postgres
+  secretfile: secrets/secrets.yaml
   username: nautobot
 fullnameOverride: "nautobot"
 image:
@@ -64,7 +65,7 @@ persistence:
   claim:
     enabled: false
   name: nautobot
-  size: 5Gi
+  size: 50Gi
   storageClass: csi-driver-lvm-linear
 podAnnotations: {}
 podLabels:
@@ -107,8 +108,12 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 service:
+  enabled: true
   port: 8000
+  targetPort: 8000
   type: ClusterIP
+  selectorLabels:
+    service.kubernetes.io/name: nautobot
 serviceAccount:
   # Annotations to add to the service account
   annotations:
@@ -123,7 +128,8 @@ serviceAccount:
 superUser:
   create: true
   email: nautobot@nautobot.svc.cluster.local
-  name: nautobot
+  name: nb-admin
+  secretfile: secrets/superuser.yaml
 tolerations: []
 type: StatefulSet
 # Additional volumeMounts on the output Deployment definition.

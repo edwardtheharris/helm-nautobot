@@ -24,3 +24,4 @@
 .venv/
 _build/
 .gnupg/
+secrets/
