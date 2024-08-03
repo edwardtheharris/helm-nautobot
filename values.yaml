@@ -33,7 +33,7 @@ database:
   username: "pg_tmp"
 fullnameOverride: "nautobot"
 image:
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
   tag: '0.0.1'
