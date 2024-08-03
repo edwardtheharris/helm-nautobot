@@ -24,7 +24,7 @@ config:
 database:
   database: nautobot
   engine: django.db.backends.postgresql
-  host: postgres-0.postgresql.svc.cluster.local
+  host: postgresql.postgresql.svc.cluster.local
   name: postgres
   password: "pg_tmp"
   port: '5432'
@@ -69,6 +69,9 @@ livenessProbe:
   successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful after having failed
   timeoutSeconds: 5 # When the probe times out
 nameOverride: "nautobot"
+nautobot:
+  social_auth_github_key: sagk
+  social_auth_github_secret: sags
 nodeSelector:
   kubernetes.io/os: linux
 persistence:
@@ -142,6 +145,7 @@ superUser:
   password: ""
   secret:
     name: secret.superuser
+  secretKey: '57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f'
   token: ""
   username: ""
 tolerations: []

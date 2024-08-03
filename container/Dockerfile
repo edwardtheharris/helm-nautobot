@@ -5,7 +5,8 @@ LABEL org.opencontainers.image.source "https://github.com/edwardtheharris/helm-n
 LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1"
 USER root
 RUN apt-get -y update \
-    && apt-get -y install git iputils-ping nmap vim
+    && apt-get -y install git iputils-ping nmap vim \
+    && pip install -U loguru pip
 COPY --chown=nautobot:nautobot nautobot_config.py /opt/nautobot/nautobot_config.py
 USER nautobot
 CMD ["sleep", "3600"]

@@ -24,7 +24,10 @@ spec:
     spec:
       containers:
         - name: nautobot
-          command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
+          # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
+          command:
+            - sleep
+            - "3600"
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -61,6 +64,8 @@ spec:
               value: redis-0.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
+            - name: NAUTOBOT_SECRET_KEY
+              value: {{ .Values.superUser.secretKey }}
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -75,6 +80,10 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.superUser.secret.name }}
                   key: password
+            - name: SOCIAL_AUTH_GITHUB_KEY
+              value: {{ .Values.nautobot.social_auth_github_key }}
+            - name: SOCIAL_AUTH_GITUB_SECRET
+              value: {{ .Values.nautobot.social_auth_github_secret }}
           volumeMounts:
             - name: nautobot-config
               mountPath: /opt/nautobot/.nautobot

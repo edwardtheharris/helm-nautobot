@@ -1,6 +1,19 @@
 """Nautobot configuration settings."""
 import os
 
+from loguru import logger
+
+from nautobot.core.settings import AUTHENTICATION_BACKENDS
+from nautobot.core.settings import JOBS_ROOT
+from nautobot.core.settings import MAINTENANCE_MODE
+from nautobot.core.settings import METRICS_ENABLED
+from nautobot.core.settings import NAUTOBOT_ROOT
+from nautobot.core.settings import PLUGINS
+from nautobot.core.settings import ROOT_URLCONF
+from nautobot.core.settings import SANITIZER_PATTERNS
+from nautobot.core.settings import STATIC_ROOT
+from nautobot.core.settings import STORAGE_BACKEND
+from nautobot.core.settings import STORAGE_CONFIG
 from nautobot.core.settings_funcs import is_truthy
 from nautobot.core.settings_funcs import parse_redis_connection
 
@@ -18,6 +31,10 @@ from nautobot.core.settings_funcs import parse_redis_connection
 # Example: ALLOWED_HOSTS = ['nautobot.example.com', 'nautobot.internal.local']
 #
 ALLOWED_HOSTS = os.getenv("NAUTOBOT_ALLOWED_HOSTS", "").split(" ")
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+)
 
 # The django-redis cache is used to establish concurrent locks using Redis.
 #
@@ -37,6 +54,7 @@ CACHES = {
     }
 }
 
+logger.debug(f'root url conf: {ROOT_URLCONF}')
 # Number of seconds to cache ContentType lookups. Set to 0 to disable caching.
 # CONTENT_TYPE_CACHE_TIMEOUT = int(os.getenv("NAUTOBOT_CONTENT_TYPE_CACHE_TIMEOUT", "0"))
 
@@ -69,7 +87,8 @@ DATABASES = {
         "CONN_MAX_AGE": int(os.getenv("NAUTOBOT_DB_TIMEOUT", "300")),  # Database timeout
         "ENGINE": os.getenv(
             "NAUTOBOT_DB_ENGINE",
-            # "django_prometheus.db.backends.postgresql" if METRICS_ENABLED else "django.db.backends.postgresql",
+            # "django_prometheus.db.backends.postgresql"
+            # if METRICS_ENABLED else "django.db.backends.postgresql",
             'django.db.backends.postgresql',
         ),  # Database driver ("mysql" or "postgresql")
     }
@@ -80,8 +99,10 @@ DATABASES = {
 if DATABASES["default"]["ENGINE"].endswith("mysql"):
     DATABASES["default"]["OPTIONS"] = {"charset": "utf8mb4"}
 
-# This key is used for secure generation of random numbers and strings. It must never be exposed outside of this file.
-# For optimal security, SECRET_KEY should be at least 50 characters in length and contain a mix of letters, numbers, and
+# This key is used for secure generation of random numbers and strings.
+# It must never be exposed outside of this file.
+# For optimal security, SECRET_KEY should be at least 50 characters
+# in length and contain a mix of letters, numbers, and
 # symbols. Nautobot will not run without this defined. For more information, see
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-SECRET_KEY
 SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f")
@@ -167,7 +188,7 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 
 # The file path where uploaded media such as image attachments are stored. A trailing slash is not needed.
 #
-# MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
+MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 
 # Set to True to use session cookies instead of persistent cookies.
 # Session cookies will expire when a browser is closed.
@@ -191,7 +212,7 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 
 # Where static files (CSS, JavaScript, etc.) are stored
 #
-# STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
+STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 
 # Time zone (default: UTC)
 #
@@ -362,7 +383,7 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 
 # Directory where cloned Git repositories will be stored.
 #
-# GIT_ROOT = os.getenv("NAUTOBOT_GIT_ROOT", os.path.join(NAUTOBOT_ROOT, "git").rstrip("/"))
+GIT_ROOT = os.getenv("NAUTOBOT_GIT_ROOT", os.path.join(NAUTOBOT_ROOT, "git").rstrip("/"))
 
 # Prefixes to use for custom fields, relationships, and computed fields in GraphQL representation of data.
 #
@@ -393,7 +414,7 @@ INSTALLATION_METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_INSTALLATION_METRIC
 
 # Directory where Jobs can be discovered.
 #
-# JOBS_ROOT = os.getenv("NAUTOBOT_JOBS_ROOT", os.path.join(NAUTOBOT_ROOT, "jobs").rstrip("/"))
+JOBS_ROOT = os.getenv("NAUTOBOT_JOBS_ROOT", os.path.join(NAUTOBOT_ROOT, "jobs").rstrip("/"))
 
 # Location names are not guaranteed globally-unique by Nautobot but in practice they often are.
 # Set this to True to use the location name alone as the natural key for Location objects.
@@ -408,7 +429,7 @@ INSTALLATION_METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_INSTALLATION_METRIC
 
 # Setting this to True will display a "maintenance mode" banner at the top of every page.
 #
-# MAINTENANCE_MODE = is_truthy(os.getenv("NAUTOBOT_MAINTENANCE_MODE", "False"))
+MAINTENANCE_MODE = is_truthy(os.getenv("NAUTOBOT_MAINTENANCE_MODE", "False"))
 
 # Maximum number of objects that the UI and API will retrieve in a single request. Default is 1000
 #
@@ -455,7 +476,7 @@ INSTALLATION_METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_INSTALLATION_METRIC
 
 # Enable installed plugins. Add the name of each plugin to the list.
 #
-# PLUGINS = []
+PLUGINS = []
 
 # Plugins configuration settings. These settings are used by various plugins that the user may have installed.
 # Each key in the dictionary is the name of an installed plugin and its value is a dictionary of settings.
@@ -525,6 +546,8 @@ INSTALLATION_METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_INSTALLATION_METRIC
 # Configure SSO, for more information see docs/configuration/authentication/sso.md
 #
 # SOCIAL_AUTH_POSTGRES_JSONFIELD = False
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 
 # By default uploaded media is stored on the local filesystem. Using Django-storages is also supported. Provide the
 # class path of the storage driver in STORAGE_BACKEND and any configuration options in STORAGE_CONFIG.
