@@ -35,6 +35,15 @@ ALLOWED_HOSTS = os.getenv("NAUTOBOT_ALLOWED_HOSTS", "").split(" ")
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
 )
+logger.debug(AUTHENTICATION_BACKENDS)
+logger.debug(JOBS_ROOT)
+logger.debug(MAINTENANCE_MODE)
+logger.debug(METRICS_ENABLED)
+logger.debug(PLUGINS)
+logger.debug(SANITIZER_PATTERNS)
+logger.debug(STATIC_ROOT)
+logger.debug(STORAGE_BACKEND)
+logger.debug(STORAGE_CONFIG)
 
 # The django-redis cache is used to establish concurrent locks using Redis.
 #
@@ -186,7 +195,8 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 #     },
 # }
 
-# The file path where uploaded media such as image attachments are stored. A trailing slash is not needed.
+# The file path where uploaded media such as image attachments are stored.
+# A trailing slash is not needed.
 #
 MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 
@@ -204,9 +214,12 @@ MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 #
 # SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
-# By default, Nautobot will store session data in the database. Alternatively, a file path can be specified here to use
-# local file storage instead. (This can be useful for enabling authentication on a standby instance with read-only
-# database access.) Note that the user as which Nautobot runs must have read and write permissions to this path.
+# By default, Nautobot will store session data in the database. Alternatively,
+# a file path can be specified here to use
+# local file storage instead. (This can be useful for enabling authentication
+# on a standby instance with read-only
+# database access.) Note that the user as which Nautobot runs must have read
+# and write permissions to this path.
 #
 # SESSION_FILE_PATH = os.getenv("NAUTOBOT_SESSION_FILE_PATH", None)
 
@@ -588,7 +601,12 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # Each string should be a dotted Python path to an application configuration class (preferred),
 # or a package containing an application.
 # https://docs.nautobot.com/projects/core/en/latest/configuration/optional-settings/#extra-applications
-# EXTRA_INSTALLED_APPS = []
+# EXTRA_INSTALLED_APPS = [
+#     'django.contrib.contenttypes.models.ContentType',
+# ]
+# INSTALLED_APPS = [
+#     'django.contrib.contenttypes.models.ContentType',
+# ]
 
 # Allow users to enable request profiling on their login session
 # ALLOW_REQUEST_PROFILING = False

@@ -87,11 +87,12 @@ spec:
           volumeMounts:
             - name: nautobot-config
               mountPath: /opt/nautobot/.nautobot
-              readOnly: true
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot/
       imagePullSecrets:
         - name: ghcr
+      securityContext:
+        fsGroup: 999
       volumes:
         - name: {{ .Values.config.name }}
           configMap:
