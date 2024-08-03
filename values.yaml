@@ -7,33 +7,49 @@ affinity:
   requiredDuringSchedulingIgnoredDuringExecution:
     nodeSelectorTerms:
       - matchExpressions:
-          - key: application
+          - key: kubernetes.io/os
             operator: In
             values:
-              - true
+              - linux
 autoscaling:
   enabled: false
-  maxReplicas: 3
-  minReplicas: 1
-  targetCPUUtilizationPercentage: 80
+  maxReplicas: 0
+  minReplicas: 0
+  # targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-fullnameOverride: "postgres"
+config:
+  allowed_hosts: "*"
+  caches_backend: django_redis.cache.RedisCache
+  name: nautobot-config
+database:
+  database: nautobot
+  engine: django.db.backends.postgresql
+  host: postgresql.postgresql.svc.cluster.local
+  name: postgres
+  password: "pg_tmp"
+  port: '5432'
+  secretfile: secrets/secrets.yaml
+  timeout: '300'
+  username: "pg_tmp"
+fullnameOverride: "nautobot"
 image:
-  pullPolicy: IfNotPresent
-  repository: postgres
+  pullPolicy: Always
+  repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "16-alpine"
-
-imagePullSecrets: []
+  tag: '0.0.1'
+  secret:
+    name: ghcr
+    data: ''
+imagePullSecrets:
+  - name: ghcr
 ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
-  # kubernetes.io/tls-acme: "true"
-  className: ""
-  enabled: false
+    # kubernetes.io/tls-acme: "true"
+  className: "nginx"
+  enabled: true
   hosts:
-  - host: pg.svc.cluster.local
+  - host: nautobot.svc.cluster.local
     paths:
     - path: /
       pathType: ImplementationSpecific
@@ -41,7 +57,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
 livenessProbe:
   exec:
     command:
@@ -53,37 +68,39 @@ livenessProbe:
   periodSeconds: 10 # How often to perform the probe
   successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful after having failed
   timeoutSeconds: 5 # When the probe times out
-nameOverride: "postgres"
-nodeSelector: {}
+nameOverride: "nautobot"
+nautobot:
+  social_auth_github_key: sagk
+  social_auth_github_secret: sags
+nodeSelector:
+  kubernetes.io/os: linux
 persistence:
-  size: 100Gi
-  storageClass: local-storage
+  claim:
+    enabled: false
+  name: nautobot
+  size: 50Gi
+  storageClass: csi-driver-lvm-linear
 podAnnotations: {}
 podLabels:
-  app: postgres
+  app: nautobot
 podSecurityContext: {}
 # fsGroup: 2000
-postgresql:
-  database: postgres
-  name: postgres
-  password: postgres
-  username: postgres
-readinessProbe:
-  exec:
-    command:
-    - pg_isready
-    - -U
-    - postgres
-  failureThreshold: 3 # When to give up, marking the Pod as Unready
-  initialDelaySeconds: 5 # Delay before the first probe is initiated, can be shorter than liveness probe
-  periodSeconds: 5 # How often to perform the probe
-  successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful
-  timeoutSeconds: 1 # When the probe times out
+# readinessProbe:
+#   exec:
+#     command:
+#     - pg_isready
+#     - -U
+#     - postgres
+#   failureThreshold: 3 # When to give up, marking the Pod as Unready
+#   initialDelaySeconds: 5 # Delay before the first probe is initiated, can be shorter than liveness probe
+#   periodSeconds: 5 # How often to perform the probe
+#   successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful
+#   timeoutSeconds: 1 # When the probe times out
 replicaCount: 1
 resources:
   limits:
-    cpu: 1
-    memory: 2048Mi
+    cpu: 2
+    memory: 4096Mi
 ###
 # We usually recommend not to specify default resources and to leave this as a conscious
 # choice for the user. This also increases chances charts run on environments with little
@@ -104,25 +121,40 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 service:
-  port: 5432
+  enabled: true
+  port: 8000
+  targetPort: 8000
   type: ClusterIP
+  selectorLabels:
+    service.kubernetes.io/name: nautobot
 serviceAccount:
   # Annotations to add to the service account
-  annotations: {}
+  annotations:
+    sa.kubernetes.io/name: nautobot
   # Automatically mount a ServiceAccount's API credentials?
   automount: true
   # Specifies whether a service account should be created
   create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: "postgres"
+  name: "nautobot"
+superUser:
+  create: true
+  email: nautobot@nautobot.svc.cluster.local
+  name: nb-admin
+  password: ""
+  secret:
+    name: secret.superuser
+  secretKey: '57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f'
+  token: ""
+  username: ""
 tolerations: []
 type: StatefulSet
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts:
-- mountPath: "/mnt/k8s/psql"
-  name: data
-  readOnly: false
+volumeMounts: []
+# - mountPath: "/mnt/k8s/psql"
+#   name: data
+#   readOnly: false
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true

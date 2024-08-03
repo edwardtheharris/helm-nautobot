@@ -21,3 +21,7 @@
 .idea/
 *.tmproj
 .vscode/
+.venv/
+_build/
+.gnupg/
+secrets/

@@ -1,0 +1,51 @@
+{{ if .Values.persistence.claim.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    name: nautobot
+    app.kubernetes.io/name: nautobot
+    volume.kubernetes.io/storage-provisioner: usb
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: nautobot
+    app.kubernetes.io/name: nautobot
+  name: nautobot
+  namespace: nautobot
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: usb
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    name: nautobot
+    app.kubernetes.io/name: nautobot
+    volume.kubernetes.io/storage-provisioner: usb
+    volume.kubernetes.io/name: git
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: nautobot
+    app.kubernetes.io/name: nautobot
+  name: git
+  namespace: nautobot
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: usb
+  volumeMode: Filesystem
+{{ end }}

@@ -5,3 +5,5 @@ venv/
 .vscode/
 _build
 .venv/
+gh.gpg
+secrets/

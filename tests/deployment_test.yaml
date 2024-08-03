@@ -1,0 +1,20 @@
+###
+# ```{rubric} Deployment Test Suite
+# ```
+# ---
+# Tests to validate the deployment of the described Deployment.
+suite: test for deployment
+templates:
+  - deployment.yaml
+tests:
+  - asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          pattern: nautobot
+    it: should be a Deployment
+    set:
+      nautobot:
+        name: nautobot
+
