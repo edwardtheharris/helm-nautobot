@@ -5,3 +5,9 @@ metadata:
 data:
     nautobot_config.py: |
 {{ range .Files.Lines "nautobot_config.py" }}{{ . | nindent 6 }}{{ end }}
+    .bashrc: |
+      #!/bin/bash
+
+      PATH="/opt/nautobot/bin:$PATH"
+
+      export PATH

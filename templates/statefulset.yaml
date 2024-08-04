@@ -86,9 +86,9 @@ spec:
               value: {{ .Values.nautobot.social_auth_github_secret }}
           volumeMounts:
             - name: nautobot-config
-              mountPath: /opt/nautobot/.nautobot
-            - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot/
+            - name: {{ .Values.persistence.name }}
+              mountPath: /opt/nautobot
       imagePullSecrets:
         - name: ghcr
       securityContext:
@@ -102,7 +102,7 @@ spec:
         name: {{ .Values.persistence.name }}
       spec:
         accessModes:
-          - ReadWriteOnce
+          - ReadWriteMany
         resources:
           requests:
             storage: {{ .Values.persistence.size }}
