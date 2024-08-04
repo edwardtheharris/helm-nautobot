@@ -11,3 +11,17 @@ data:
       PATH="/opt/nautobot/bin:$PATH"
 
       export PATH
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: celery-config
+data:
+  nautobot_config.py: |
+{{ range .Files.Lines "nautobot_config.py" }}{{ . | nindent 6 }}{{ end }}
+  .bashrc: |-
+    #!/bin/bash
+
+    PATH="/opt/nautobot/bin:$PATH"
+
+    export PATH

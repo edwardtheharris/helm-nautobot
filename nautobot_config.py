@@ -6,6 +6,7 @@ from loguru import logger
 
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
 from nautobot.core.settings import AUTHENTICATION_BACKENDS
+from nautobot.core.settings import CACHEOPS_ENABLED
 from nautobot.core.settings import CELERY_BROKER_URL
 # from nautobot.core.settings import CELERY_BEAT_HEARTBEAT_FILE
 from nautobot.core.settings import CELERY_TASK_DEFAULT_QUEUE
@@ -15,6 +16,7 @@ from nautobot.core.settings import METRICS_ENABLED
 from nautobot.core.settings import NAUTOBOT_ROOT
 from nautobot.core.settings import PLUGINS
 from nautobot.core.settings import ROOT_URLCONF
+from nautobot.core.settings import RQ_QUEUES
 from nautobot.core.settings import SANITIZER_PATTERNS
 from nautobot.core.settings import STATIC_ROOT
 from nautobot.core.settings import STORAGE_BACKEND
@@ -27,7 +29,12 @@ from nautobot.core.settings_funcs import parse_redis_connection
 #   Required settings   #
 #                       #
 #########################
-
+logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
+logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
+logger.debug(f'celery broker url: {CELERY_BROKER_URL}')
+logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
+logger.debug(f'rq queues: {RQ_QUEUES}')
+logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
 # server. Nautobot will not permit write
 # access to the server via any other hostnames. The first FQDN in the list will
