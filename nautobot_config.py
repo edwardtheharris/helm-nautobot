@@ -1,11 +1,14 @@
 """Nautobot configuration settings."""
 import os
+import tempfile
 
 from loguru import logger
 
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
 from nautobot.core.settings import AUTHENTICATION_BACKENDS
-from nautobot.core.settings import INSTALLED_APPS
+from nautobot.core.settings import CELERY_BROKER_URL
+# from nautobot.core.settings import CELERY_BEAT_HEARTBEAT_FILE
+from nautobot.core.settings import CELERY_TASK_DEFAULT_QUEUE
 from nautobot.core.settings import JOBS_ROOT
 from nautobot.core.settings import MAINTENANCE_MODE
 from nautobot.core.settings import METRICS_ENABLED
@@ -71,10 +74,10 @@ logger.debug(f'root url conf: {ROOT_URLCONF}')
 
 # Celery Beat heartbeat file path - will be touched by Beat each time it wakes
 # up as a proof-of-health.
-# CELERY_BEAT_HEARTBEAT_FILE = os.getenv(
-#     "NAUTOBOT_CELERY_BEAT_HEARTBEAT_FILE",
-#     os.path.join(tempfile.gettempdir(), "nautobot_celery_beat_heartbeat"),
-# )
+CELERY_BEAT_HEARTBEAT_FILE = os.getenv(
+    "NAUTOBOT_CELERY_BEAT_HEARTBEAT_FILE",
+    os.path.join(tempfile.gettempdir(), "nautobot_celery_beat_heartbeat"),
+)
 
 # Celery broker URL used to tell workers where queues are located
 #
@@ -182,7 +185,8 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 #             "datefmt": "%H:%M:%S",
 #         },
 #         "verbose": {
-#             "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s %(filename)-15s %(funcName)30s() :\n  %(message)s",
+#             "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s
+#                   %(filename)-15s %(funcName)30s() :\n  %(message)s",
 #             "datefmt": "%H:%M:%S",
 #         },
 #     },
@@ -395,19 +399,24 @@ CORS_ALLOW_ALL_ORIGINS = is_truthy(os.getenv("NAUTOBOT_CORS_ALLOW_ALL_ORIGINS", 
 # Set this to True to use the device name alone as the natural key for Device objects.
 # Set this to False to use the sequence (name, tenant, location) as the natural key instead.
 #
-# if "NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY" in os.environ and os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"] != "":
+# if "NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY" in os.environ and
+#       os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"] != "":
 #     DEVICE_NAME_AS_NATURAL_KEY = is_truthy(os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"])
 
-# The number of seconds to cache the member list of dynamic groups. Set this to `0` to disable caching.
+# The number of seconds to cache the member list of dynamic groups.
+# Set this to `0` to disable caching.
 #
 # if (
 #     "NAUTOBOT_DYNAMIC_GROUPS_MEMBER_CACHE_TIMEOUT" in os.environ
 #     and os.environ["NAUTOBOT_DYNAMIC_GROUPS_MEMBER_CACHE_TIMEOUT"] != ""
 # ):
-#     DYNAMIC_GROUPS_MEMBER_CACHE_TIMEOUT = int(os.environ["NAUTOBOT_DYNAMIC_GROUPS_MEMBER_CACHE_TIMEOUT"])
+#     DYNAMIC_GROUPS_MEMBER_CACHE_TIMEOUT = int(
+    # os.environ["NAUTOBOT_DYNAMIC_GROUPS_MEMBER_CACHE_TIMEOUT"])
 
-# Exempt certain models from the enforcement of view permissions. Models listed here will be viewable by all users and
-# by anonymous users. List models in the form `<app>.<model>`. Add '*' to this list to exempt all models.
+# Exempt certain models from the enforcement of view permissions. Models listed
+# here will be viewable by all users and
+# by anonymous users. List models in the form `<app>.<model>`.
+# Add '*' to this list to exempt all models.
 # Defaults to [].
 #
 # EXEMPT_VIEW_PERMISSIONS = [
@@ -424,7 +433,8 @@ CORS_ALLOW_ALL_ORIGINS = is_truthy(os.getenv("NAUTOBOT_CORS_ALLOW_ALL_ORIGINS", 
 #
 GIT_ROOT = os.getenv("NAUTOBOT_GIT_ROOT", os.path.join(NAUTOBOT_ROOT, "git").rstrip("/"))
 
-# Prefixes to use for custom fields, relationships, and computed fields in GraphQL representation of data.
+# Prefixes to use for custom fields, relationships, and computed
+# fields in GraphQL representation of data.
 #
 # GRAPHQL_COMPUTED_FIELD_PREFIX = "cpf"
 # GRAPHQL_CUSTOM_FIELD_PREFIX = "cf"
@@ -443,9 +453,11 @@ INSTALLATION_METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_INSTALLATION_METRIC
 
 # Storage backend to use for Job input files and Job output files.
 #
-# Note: the default is for backwards compatibility and it is recommended to change it if possible for your deployment.
+# Note: the default is for backwards compatibility and it is recommended to
+# change it if possible for your deployment.
 #
-# JOB_FILE_IO_STORAGE = os.getenv("NAUTOBOT_JOB_FILE_IO_STORAGE", "db_file_storage.storage.DatabaseFileStorage")
+# JOB_FILE_IO_STORAGE = os.getenv(
+    # "NAUTOBOT_JOB_FILE_IO_STORAGE", "db_file_storage.storage.DatabaseFileStorage")
 
 # Maximum size in bytes of any single file created by Job.create_file().
 #
@@ -457,12 +469,15 @@ JOBS_ROOT = os.getenv("NAUTOBOT_JOBS_ROOT", os.path.join(NAUTOBOT_ROOT, "jobs").
 
 # Location names are not guaranteed globally-unique by Nautobot but in practice they often are.
 # Set this to True to use the location name alone as the natural key for Location objects.
-# Set this to False to use the sequence (name, parent__name, parent__parent__name, ...) as the natural key instead.
+# Set this to False to use the sequence (name, parent__name, parent__parent__name, ...)
+# as the natural key instead.
 #
-# if "NAUTOBOT_LOCATION_NAME_AS_NATURAL_KEY" in os.environ and os.environ["NAUTOBOT_LOCATION_NAME_AS_NATURAL_KEY"] != "":
+# if "NAUTOBOT_LOCATION_NAME_AS_NATURAL_KEY" in os.environ
+#       and os.environ["NAUTOBOT_LOCATION_NAME_AS_NATURAL_KEY"] != "":
 #     LOCATION_NAME_AS_NATURAL_KEY = is_truthy(os.environ["NAUTOBOT_LOCATION_NAME_AS_NATURAL_KEY"])
 
-# Log Nautobot deprecation warnings. Note that this setting is ignored (deprecation logs always enabled) if DEBUG = True
+# Log Nautobot deprecation warnings. Note that this setting is ignored
+# (deprecation logs always enabled) if DEBUG = True
 #
 # LOG_DEPRECATION_WARNINGS = is_truthy(os.getenv("NAUTOBOT_LOG_DEPRECATION_WARNINGS", "False"))
 
@@ -485,7 +500,8 @@ MAINTENANCE_MODE = is_truthy(os.getenv("NAUTOBOT_MAINTENANCE_MODE", "False"))
 
 # Disable app metrics for specific apps
 #
-# if "NAUTOBOT_METRICS_DISABLED_APPS" in os.environ and os.environ["NAUTOBOT_METRICS_DISABLED_APPS"] != "":
+# if "NAUTOBOT_METRICS_DISABLED_APPS" in os.environ
+#       and os.environ["NAUTOBOT_METRICS_DISABLED_APPS"] != "":
 #     METRICS_DISABLED_APPS = os.getenv("NAUTOBOT_METRICS_DISABLED_APPS", "").split(",")
 
 # Credentials that Nautobot will uses to authenticate to devices when connecting via NAPALM.
@@ -497,7 +513,8 @@ MAINTENANCE_MODE = is_truthy(os.getenv("NAUTOBOT_MAINTENANCE_MODE", "False"))
 #
 # NAPALM_TIMEOUT = int(os.getenv("NAUTOBOT_NAPALM_TIMEOUT", "30"))
 
-# NAPALM optional arguments (see https://napalm.readthedocs.io/en/latest/support/#optional-arguments). Arguments must
+# NAPALM optional arguments (see
+# https://napalm.readthedocs.io/en/latest/support/#optional-arguments). Arguments must
 # be provided as a dictionary.
 #
 # NAPALM_ARGS = {}
@@ -517,8 +534,10 @@ MAINTENANCE_MODE = is_truthy(os.getenv("NAUTOBOT_MAINTENANCE_MODE", "False"))
 #
 PLUGINS = []
 
-# Plugins configuration settings. These settings are used by various plugins that the user may have installed.
-# Each key in the dictionary is the name of an installed plugin and its value is a dictionary of settings.
+# Plugins configuration settings. These settings are used by various
+# plugins that the user may have installed.
+# Each key in the dictionary is the name of an installed plugin and its value
+# is a dictionary of settings.
 #
 # PLUGINS_CONFIG = {
 #     'my_plugin': {
@@ -527,23 +546,27 @@ PLUGINS = []
 #     }
 # }
 
-# Prefer IPv6 addresses or IPv4 addresses in selecting a device's primary IP address? Default False
+# Prefer IPv6 addresses or IPv4 addresses in selecting a device's primary
+# IP address? Default False
 #
 # if "NAUTOBOT_PREFER_IPV4" in os.environ and os.environ["NAUTOBOT_PREFER_IPV4"] != "":
 #     PREFER_IPV4 = is_truthy(os.environ["NAUTOBOT_PREFER_IPV4"])
 
-# Default height and width in pixels of a single rack unit in rendered rack elevations. Defaults are 22 and 230
+# Default height and width in pixels of a single rack unit in rendered rack
+# elevations. Defaults are 22 and 230
 #
 # if (
 #     "NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_HEIGHT" in os.environ
 #     and os.environ["NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_HEIGHT"] != ""
 # ):
-#     RACK_ELEVATION_DEFAULT_UNIT_HEIGHT = int(os.environ["NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_HEIGHT"])
+#     RACK_ELEVATION_DEFAULT_UNIT_HEIGHT = int(
+    # os.environ["NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_HEIGHT"])
 # if (
 #     "NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_WIDTH" in os.environ
 #     and os.environ["NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_WIDTH"] != ""
 # ):
-#     RACK_ELEVATION_DEFAULT_UNIT_WIDTH = int(os.environ["NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_WIDTH"])
+#     RACK_ELEVATION_DEFAULT_UNIT_WIDTH = int(
+    # os.environ["NAUTOBOT_RACK_ELEVATION_DEFAULT_UNIT_WIDTH"])
 
 # Enable two-digit format for the rack unit numbering in rack elevations.
 #
@@ -551,17 +574,20 @@ PLUGINS = []
 #     "NAUTOBOT_RACK_ELEVATION_UNIT_TWO_DIGIT_FORMAT" in os.environ
 #      and os.environ["NAUTOBOT_RACK_ELEVATION_UNIT_TWO_DIGIT_FORMAT"] != ""
 # ):
-#     RACK_ELEVATION_UNIT_TWO_DIGIT_FORMAT = is_truthy(os.environ["NAUTOBOT_RACK_ELEVATION_UNIT_TWO_DIGIT_FORMAT"])
+#     RACK_ELEVATION_UNIT_TWO_DIGIT_FORMAT = is_truthy(
+    # os.environ["NAUTOBOT_RACK_ELEVATION_UNIT_TWO_DIGIT_FORMAT"])
 
 # Sets an age out timer of redis lock. This is NOT implicitly applied to locks, must be added
 # to a lock creation as `timeout=settings.REDIS_LOCK_TIMEOUT`
 #
 # REDIS_LOCK_TIMEOUT = int(os.getenv("NAUTOBOT_REDIS_LOCK_TIMEOUT", "600"))
 
-# How frequently to check for a new Nautobot release on GitHub, and the URL to check for this information.
+# How frequently to check for a new Nautobot release on GitHub, and the URL
+# to check for this information.
 # Defaults to disabled (no URL) and check every 24 hours when enabled
 #
-# if "NAUTOBOT_RELEASE_CHECK_TIMEOUT" in os.environ and os.environ["NAUTOBOT_RELEASE_CHECK_TIMEOUT"] != "":
+# if "NAUTOBOT_RELEASE_CHECK_TIMEOUT" in os.environ
+#          and os.environ["NAUTOBOT_RELEASE_CHECK_TIMEOUT"] != "":
 #     RELEASE_CHECK_TIMEOUT = int(os.environ["NAUTOBOT_RELEASE_CHECK_TIMEOUT"])
 # if "NAUTOBOT_RELEASE_CHECK_URL" in os.environ and os.environ["NAUTOBOT_RELEASE_CHECK_URL"] != "":
 #     RELEASE_CHECK_URL = os.environ["NAUTOBOT_RELEASE_CHECK_URL"]
@@ -577,7 +603,9 @@ PLUGINS = []
 #     # General removal of username-like and password-like tokens
 #     (re.compile(r"(https?://)?\S+\s*@", re.IGNORECASE), r"\1{replacement}@"),
 #     (
-#         re.compile(r"(username|password|passwd|pwd|secret|secrets)([\"']?(?:\s+is.?|:)?\s+)\S+[\"']?", re.IGNORECASE),
+#         re.compile(
+    # r"(username|password|passwd|pwd|secret|secrets)([\"']?(?:\s+is.?|:)?\s+)\S+[\"']?",
+    # re.IGNORECASE),
 #         r"\1\2{replacement}",
 #     ),
 # ]
@@ -588,8 +616,10 @@ PLUGINS = []
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 
-# By default uploaded media is stored on the local filesystem. Using Django-storages is also supported. Provide the
-# class path of the storage driver in STORAGE_BACKEND and any configuration options in STORAGE_CONFIG.
+# By default uploaded media is stored on the local filesystem. Using
+# Django-storages is also supported. Provide the
+# class path of the storage driver in STORAGE_BACKEND and any configuration
+# options in STORAGE_CONFIG.
 # These default to None and {} respectively.
 #
 # STORAGE_BACKEND = 'storages.backends.s3.S3Storage'
@@ -615,7 +645,8 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # def UI_RACK_VIEW_TRUNCATE_FUNCTION(device_display_name):
 #     """Given device display name, truncate to fit the rack elevation view.
 #
-#     :param device_display_name: Full display name of the device attempting to be rendered in the rack elevation.
+#     :param device_display_name: Full display name of the device attempting to
+#           be rendered in the rack elevation.
 #     :type device_display_name: str
 #
 #     :return: Truncated device name
@@ -630,9 +661,9 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # EXTRA_INSTALLED_APPS = [
 #     'django.contrib.contenttypes.models.ContentType',
 # ]
-INSTALLED_APPS.append(
-    'django.contrib.contenttypes.models.ContentType',
-)
+# INSTALLED_APPS.append(
+#     'django.contrib.contenttypes',
+# )
 
 # Allow users to enable request profiling on their login session
 # ALLOW_REQUEST_PROFILING = False

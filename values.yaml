@@ -17,6 +17,9 @@ autoscaling:
   minReplicas: 0
   # targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
+celery:
+  image:
+    repository: ghcr.io/edwardtheharris/helm-nautobot/celery
 config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache

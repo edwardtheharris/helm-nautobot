@@ -23,6 +23,11 @@ spec:
         ss.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
+        - name: celery-worker
+          command:
+            - sleep
+            - "3600"
+          image: "{{ .Values.celery.image.repository }}:{{ .Values.image.tag }}"
         - name: nautobot
           # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
@@ -42,6 +47,8 @@ spec:
               value: {{ .Values.superUser.create | quote }}
             - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
               value: 'True'
+            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
+              value: 'r1'
             - name: NAUTOBOT_DB_ENGINE
               value: {{ .Values.database.engine }}
             - name: NAUTOBOT_DB_HOST
