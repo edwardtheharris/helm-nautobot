@@ -27,7 +27,22 @@ spec:
           command:
             - sleep
             - "3600"
-          image: "{{ .Values.celery.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: CELERY_BROKER_URL
+              value: redis://redis.redis.svc.cluster.local:6379
+            - name: NAUTOBOT_CELERY_RESULT_BACKEND
+              value: redis://redis.redis.svc.cluster.local:6379
+            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
+              value: nautobot-default
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8001
+              name: celery
+          volumeMounts:
+            - name: nautobot-config
+              mountPath: /opt/nautobot/
+            - name: {{ .Values.persistence.name }}
+              mountPath: /opt/nautobot
         - name: nautobot
           # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
