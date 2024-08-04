@@ -19,6 +19,7 @@ from nautobot.core.settings import PLUGINS
 from nautobot.core.settings import ROOT_URLCONF
 from nautobot.core.settings import RQ_QUEUES
 from nautobot.core.settings import SANITIZER_PATTERNS
+from nautobot.core.settings import SECRET_KEY
 from nautobot.core.settings import STATIC_ROOT
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
@@ -36,6 +37,7 @@ logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
 logger.debug(f'celery broker url: {CELERY_BROKER_URL}')
 logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
 logger.debug(f'rq queues: {RQ_QUEUES}')
+logger.debug(f'secret key: {SECRET_KEY}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
 # server. Nautobot will not permit write
 # access to the server via any other hostnames. The first FQDN in the list will
@@ -127,7 +129,9 @@ if DATABASES["default"]["ENGINE"].endswith("mysql"):
 # in length and contain a mix of letters, numbers, and
 # symbols. Nautobot will not run without this defined. For more information, see
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-SECRET_KEY
-SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f")
+SECRET_KEY = os.getenv(
+    'NAUTOBOT_SECRET_KEY',
+    r'57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f')
 
 #####################################
 #                                   #
