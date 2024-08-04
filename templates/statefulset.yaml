@@ -87,6 +87,8 @@ spec:
                 secretKeyRef:
                   name: secret.{{ .Values.database.name }}
                   key: username
+            - name: NAUTOBOT_ROOT
+              value: /opt/nautobot
             - name: NAUTOBOT_REDIS_HOST
               value: redis-0.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
@@ -123,7 +125,7 @@ spec:
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot
       imagePullSecrets:
-        - name: ghcr
+        - name: secrets.github.ghcr
       securityContext:
         fsGroup: 1000
       volumes:
