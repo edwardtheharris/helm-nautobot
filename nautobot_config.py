@@ -34,7 +34,7 @@ from nautobot.core.settings_funcs import parse_redis_connection
 #   Required settings   #
 #                       #
 #########################
-logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
+
 logger.debug(f'cache ops defaults: {CACHEOPS_DEFAULTS}')
 logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
 logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
@@ -296,6 +296,7 @@ ALLOWED_URL_SCHEMES = (
     "vnc",
     "xmpp",
 )
+logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 
 # Banners (HTML is permitted) to display at the top and/or bottom of all
 # Nautobot pages, and on the login page itself.
@@ -675,9 +676,9 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # Each string should be a dotted Python path to an application configuration class (preferred),
 # or a package containing an application.
 # https://docs.nautobot.com/projects/core/en/latest/configuration/optional-settings/#extra-applications
-# EXTRA_INSTALLED_APPS = [
-#     'django.contrib.contenttypes.models.ContentType',
-# ]
+EXTRA_INSTALLED_APPS = [
+    'django.contrib.contenttypes.models.ContentType',
+]
 # INSTALLED_APPS.append(
 #     'django.contrib.contenttypes',
 # )
