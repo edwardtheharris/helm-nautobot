@@ -8,6 +8,7 @@ RUN apk add --no-cache alpine-sdk git iputils-ping jpeg-dev nmap python3-dev sha
     && python -m venv /opt/nautobot \
     && /opt/nautobot/bin/pip install --no-cache-dir -U pip \
     && /opt/nautobot/bin/pip install --no-cache-dir nautobot \
+    && groupadd nautobot \
     && useradd -m -d /opt/nautobot -s /bin/bash -g nautobot nautobot
 COPY --chown=nautobot:nautobot nautobot_config.py /opt/nautobot/nautobot_config.py
 USER nautobot
