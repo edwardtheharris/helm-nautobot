@@ -6,11 +6,14 @@ from loguru import logger
 
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
 from nautobot.core.settings import AUTHENTICATION_BACKENDS
+from nautobot.core.settings import CACHES
 from nautobot.core.settings import CACHEOPS_DEFAULTS
 from nautobot.core.settings import CACHEOPS_ENABLED
 from nautobot.core.settings import CELERY_BROKER_URL
 # from nautobot.core.settings import CELERY_BEAT_HEARTBEAT_FILE
 from nautobot.core.settings import CELERY_TASK_DEFAULT_QUEUE
+from nautobot.core.settings import DATABASES
+from nautobot.core.settings import INSTALLED_APPS
 from nautobot.core.settings import JOBS_ROOT
 from nautobot.core.settings import MAINTENANCE_MODE
 from nautobot.core.settings import METRICS_ENABLED
@@ -34,8 +37,8 @@ from nautobot.core.settings_funcs import parse_redis_connection
 logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 logger.debug(f'cache ops defaults: {CACHEOPS_DEFAULTS}')
 logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
-logger.debug(f'celery broker url: {CELERY_BROKER_URL}')
 logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
+logger.debug(f'installed apps: {INSTALLED_APPS}')
 logger.debug(f'rq queues: {RQ_QUEUES}')
 logger.debug(f'secret key: {SECRET_KEY}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
@@ -78,6 +81,7 @@ CACHES = {
     }
 }
 
+logger.debug(f'caches: {CACHES}')
 logger.debug(f'root url conf: {ROOT_URLCONF}')
 # Number of seconds to cache ContentType lookups. Set to 0 to disable caching.
 # CONTENT_TYPE_CACHE_TIMEOUT = int(os.getenv("NAUTOBOT_CONTENT_TYPE_CACHE_TIMEOUT", "0"))
@@ -93,6 +97,7 @@ CELERY_BEAT_HEARTBEAT_FILE = os.getenv(
 #
 CELERY_BROKER_URL = os.getenv(
     "NAUTOBOT_CELERY_BROKER_URL", parse_redis_connection(redis_database=0))
+logger.debug(f'celery broker url: {CELERY_BROKER_URL}')
 
 # Optional configuration dict for Celery to use custom SSL certificates to connect to Redis.
 #

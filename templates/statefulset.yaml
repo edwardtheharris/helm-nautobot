@@ -125,7 +125,7 @@ spec:
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot
       imagePullSecrets:
-        - name: secrets.github.ghcr
+        - name: secret.github.ghcr
       securityContext:
         fsGroup: 1000
       volumes:
