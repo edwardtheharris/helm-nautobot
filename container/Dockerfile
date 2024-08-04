@@ -1,4 +1,4 @@
-FROM python:alpine AS nautobot
+FROM python:3.11-alpine AS nautobot
 LABEL io.ghcr.edwardtheharris.helm-nautobot.editor="Xander Harris"
 LABEL io.ghcr.edwardtheharris.helm-nautobot.name="nautobot"
 LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-nautobot"
@@ -10,4 +10,6 @@ RUN apk add --no-cache alpine-sdk bash git iputils-ping jpeg-dev nmap python3-de
     && useradd -m -d /opt/nautobot -s /bin/bash -g nautobot nautobot \
     && chmod +x /bin/entrypoint.sh
 USER nautobot
+RUN python -m venv /opt/nautobot \
+    && /opt/nautobot/bin/pip install -U --pre nautobot pip wheel
 CMD ["/bin/entrypoint.sh"]

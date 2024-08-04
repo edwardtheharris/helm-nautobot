@@ -4,30 +4,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   annotations:
-    name: {{ .Release.Name }}-mirror
-    pvc.kubernetes.io/name: {{ .Release.Name }}
-    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
-  finalizers:
-    - kubernetes.io/pvc-protection
-  labels:
-    app.kubernetes.io/component: primary
-    pvc.kubernetes.io/instance: {{ .Release.Name }}
-    pvc.kubernetes.io/name: {{ .Release.Name }}-mirror
-  name: {{ .Release.Name }}-mirror
-  namespace: {{ .Release.Name }}
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: csi-driver-lvm-mirror
-  volumeMode: Filesystem
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
     name: {{ .Release.Name }}-striped
     app.kubernetes.io/name: {{ .Release.Name }}-striped
     volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io

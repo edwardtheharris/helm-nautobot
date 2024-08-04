@@ -67,10 +67,12 @@ spec:
               value: 'True'
             - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
               value: 'default-celery'
+            - name: NAUTOBOT_DEBUG
+              value: 'True'
             - name: NAUTOBOT_DB_ENGINE
               value: {{ .Values.database.engine }}
             - name: NAUTOBOT_DB_HOST
-              value: {{ .Values.database.host }}
+              value: psql://{{ .Values.database.host }}:5432
             - name: NAUTOBOT_DB_NAME
               value: {{ .Values.database.database }}
             - name: NAUTOBOT_DB_PASSWORD
@@ -90,7 +92,7 @@ spec:
             - name: NAUTOBOT_ROOT
               value: /opt/nautobot
             - name: NAUTOBOT_REDIS_HOST
-              value: redis-0.redis.svc.cluster.local
+              value: redis.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
             - name: NAUTOBOT_SECRET_KEY

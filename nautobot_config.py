@@ -1,5 +1,4 @@
 """Nautobot configuration settings."""
-import logging
 import os
 import tempfile
 
@@ -8,8 +7,8 @@ from loguru import logger
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
 from nautobot.core.settings import AUTHENTICATION_BACKENDS
 from nautobot.core.settings import CACHES
-from nautobot.core.settings import CACHEOPS_DEFAULTS
-from nautobot.core.settings import CACHEOPS_ENABLED
+# from nautobot.core.settings import CACHEOPS_DEFAULTS
+# from nautobot.core.settings import CACHEOPS_ENABLED
 from nautobot.core.settings import CELERY_BROKER_URL
 # from nautobot.core.settings import CELERY_BEAT_HEARTBEAT_FILE
 from nautobot.core.settings import CELERY_TASK_DEFAULT_QUEUE
@@ -22,12 +21,14 @@ from nautobot.core.settings import MIDDLEWARE
 from nautobot.core.settings import NAUTOBOT_ROOT
 from nautobot.core.settings import PLUGINS
 from nautobot.core.settings import ROOT_URLCONF
-from nautobot.core.settings import RQ_QUEUES
+# from nautobot.core.settings import RQ_QUEUES
 from nautobot.core.settings import SANITIZER_PATTERNS
 from nautobot.core.settings import SECRET_KEY
 from nautobot.core.settings import STATIC_ROOT
+from nautobot.core.settings import STATIC_URL
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
+from nautobot.core.settings import TEMPLATES
 from nautobot.core.settings_funcs import is_truthy
 from nautobot.core.settings_funcs import parse_redis_connection
 
@@ -37,13 +38,12 @@ from nautobot.core.settings_funcs import parse_redis_connection
 #                       #
 #########################
 
-logger.add(logging.StreamHandler)
 logger.debug(f'cache ops defaults: {MIDDLEWARE}')
-logger.debug(f'cache ops defaults: {CACHEOPS_DEFAULTS}')
-logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
+# logger.debug(f'cache ops defaults: {CACHEOPS_DEFAULTS}')
+# logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
 logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
 logger.debug(f'installed apps: {INSTALLED_APPS}')
-logger.debug(f'rq queues: {RQ_QUEUES}')
+# logger.debug(f'rq queues: {RQ_QUEUES}')
 logger.debug(f'secret key: {SECRET_KEY}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
 # server. Nautobot will not permit write
@@ -54,9 +54,7 @@ logger.debug(f'secret key: {SECRET_KEY}')
 #
 ALLOWED_HOSTS = os.getenv("NAUTOBOT_ALLOWED_HOSTS", "").split(" ")
 
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.github.GithubOAuth2',
-)
+
 logger.debug(AUTHENTICATION_BACKENDS)
 logger.debug(JOBS_ROOT)
 logger.debug(MAINTENANCE_MODE)
@@ -120,8 +118,6 @@ DATABASES = {
         "CONN_MAX_AGE": int(os.getenv("NAUTOBOT_DB_TIMEOUT", "300")),  # Database timeout
         "ENGINE": os.getenv(
             "NAUTOBOT_DB_ENGINE",
-            # "django_prometheus.db.backends.postgresql"
-            # if METRICS_ENABLED else "django.db.backends.postgresql",
             'django.db.backends.postgresql',
         ),  # Database driver ("mysql" or "postgresql")
     }
@@ -168,11 +164,17 @@ SECRET_KEY = os.getenv(
 # Date/time formatting. See the following link for supported formats:
 # https://docs.djangoproject.com/en/stable/ref/templates/builtins/#date
 #
-# DATE_FORMAT = os.getenv("NAUTOBOT_DATE_FORMAT", "N j, Y")
-# SHORT_DATE_FORMAT = os.getenv("NAUTOBOT_SHORT_DATE_FORMAT", "Y-m-d")
-# TIME_FORMAT = os.getenv("NAUTOBOT_TIME_FORMAT", "g:i a")
-# DATETIME_FORMAT = os.getenv("NAUTOBOT_DATETIME_FORMAT", "N j, Y g:i a")
-# SHORT_DATETIME_FORMAT = os.getenv("NAUTOBOT_SHORT_DATETIME_FORMAT", "Y-m-d H:i")
+DATE_FORMAT = os.getenv("NAUTOBOT_DATE_FORMAT", "N j, Y")
+SHORT_DATE_FORMAT = os.getenv("NAUTOBOT_SHORT_DATE_FORMAT", "Y-m-d")
+TIME_FORMAT = os.getenv("NAUTOBOT_TIME_FORMAT", "g:i a")
+DATETIME_FORMAT = os.getenv("NAUTOBOT_DATETIME_FORMAT", "N j, Y g:i a")
+SHORT_DATETIME_FORMAT = os.getenv("NAUTOBOT_SHORT_DATETIME_FORMAT", "Y-m-d H:i")
+
+logger.debug(f'templates: {TEMPLATES}')
+MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
+MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
+MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
+
 
 # Set to True to enable server debugging. WARNING: Debugging introduces a
 # substantial performance penalty and may reveal
@@ -180,7 +182,7 @@ SECRET_KEY = os.getenv(
 # performing testing. Never enable debugging
 # on a production system.
 #
-# DEBUG = is_truthy(os.getenv("NAUTOBOT_DEBUG", "False"))
+DEBUG = is_truthy(os.getenv("NAUTOBOT_DEBUG", "False"))
 
 # If hosting Nautobot in a subdirectory, you must set this value to match the
 # base URL prefix configured in your
@@ -191,7 +193,7 @@ SECRET_KEY = os.getenv(
 
 # IP addresses recognized as internal to the system.
 #
-# INTERNAL_IPS = ("127.0.0.1", "::1")
+INTERNAL_IPS = ("127.0.0.1", "::1")
 
 # Enable custom logging. Please see the Django documentation for detailed
 # guidance on configuring custom logs:
@@ -218,7 +220,7 @@ LOGGING = {
     "handlers": {
         "normal_console": {
             "level": "INFO",
-            "class": "logging.StreamHandler",
+            "class": 'logging.StreamHandler',
             "formatter": "normal",
         },
         "verbose_console": {
@@ -256,7 +258,7 @@ SESSION_COOKIE_AGE = int(
 
 # Where Nautobot stores user session data.
 #
-# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # By default, Nautobot will store session data in the database. Alternatively,
 # a file path can be specified here to use
@@ -270,6 +272,8 @@ SESSION_COOKIE_AGE = int(
 # Where static files (CSS, JavaScript, etc.) are stored
 #
 STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
+STATIC_URL = 'static/'
+logger.debug(STATIC_URL)
 
 # Time zone (default: UTC)
 #
@@ -363,14 +367,14 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 # CELERY_BROKER_TRANSPORT_OPTIONS = {}
 
 # Default celery queue name that will be used by workers and tasks if no queue is specified
-CELERY_TASK_DEFAULT_QUEUE = os.getenv("NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE", "default")
+# CELERY_TASK_DEFAULT_QUEUE = os.getenv("NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE", "default")
 
 # Global task time limits (seconds)
 # Exceeding the soft limit will result in a SoftTimeLimitExceeded exception,
 # while exceeding the hard limit will result in a SIGKILL.
 #
-CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_SOFT_TIME_LIMIT", str(5 * 60)))
-CELERY_TASK_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_TIME_LIMIT", str(10 * 60)))
+# CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_SOFT_TIME_LIMIT", str(5 * 60)))
+# CELERY_TASK_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_TIME_LIMIT", str(10 * 60)))
 
 # Ports for prometheus metric HTTP server running on the celery worker.
 # Normally this should be set to a single port, unless you have multiple
@@ -475,15 +479,16 @@ GIT_ROOT = os.getenv("NAUTOBOT_GIT_ROOT", os.path.join(NAUTOBOT_ROOT, "git").rst
 
 # Send anonymized installation metrics when `nautobot-server post_upgrade` command is run.
 #
-INSTALLATION_METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_INSTALLATION_METRICS_ENABLED", "True"))
+# INSTALLATION_METRICS_ENABLED = is_truthy(
+    # os.getenv("NAUTOBOT_INSTALLATION_METRICS_ENABLED", "True"))
 
 # Storage backend to use for Job input files and Job output files.
 #
 # Note: the default is for backwards compatibility and it is recommended to
 # change it if possible for your deployment.
 #
-# JOB_FILE_IO_STORAGE = os.getenv(
-    # "NAUTOBOT_JOB_FILE_IO_STORAGE", "db_file_storage.storage.DatabaseFileStorage")
+JOB_FILE_IO_STORAGE = os.getenv(
+    "NAUTOBOT_JOB_FILE_IO_STORAGE", "db_file_storage.storage.DatabaseFileStorage")
 
 # Maximum size in bytes of any single file created by Job.create_file().
 #
@@ -518,7 +523,7 @@ MAINTENANCE_MODE = is_truthy(os.getenv("NAUTOBOT_MAINTENANCE_MODE", "False"))
 
 # Expose Prometheus monitoring metrics at the HTTP endpoint '/metrics'
 #
-# METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_METRICS_ENABLED", "False"))
+METRICS_ENABLED = is_truthy(os.getenv("NAUTOBOT_METRICS_ENABLED", "False"))
 
 # Require API Authentication to HTTP endpoint '/metrics'
 #
@@ -606,7 +611,7 @@ PLUGINS = []
 # Sets an age out timer of redis lock. This is NOT implicitly applied to locks, must be added
 # to a lock creation as `timeout=settings.REDIS_LOCK_TIMEOUT`
 #
-# REDIS_LOCK_TIMEOUT = int(os.getenv("NAUTOBOT_REDIS_LOCK_TIMEOUT", "600"))
+REDIS_LOCK_TIMEOUT = int(os.getenv("NAUTOBOT_REDIS_LOCK_TIMEOUT", "600"))
 
 # How frequently to check for a new Nautobot release on GitHub, and the URL
 # to check for this information.
@@ -620,8 +625,11 @@ PLUGINS = []
 
 # Remote auth backend settings
 #
-# REMOTE_AUTH_AUTO_CREATE_USER = False
-# REMOTE_AUTH_HEADER = "HTTP_REMOTE_USER"
+REMOTE_AUTH_AUTO_CREATE_USER = True
+REMOTE_AUTH_HEADER = "HTTP_REMOTE_USER"
+
+logger.debug(f'{REMOTE_AUTH_AUTO_CREATE_USER}')
+logger.debug(f'{REMOTE_AUTH_HEADER}')
 
 # Job log entry sanitization and similar
 #
@@ -638,10 +646,13 @@ PLUGINS = []
 
 # Configure SSO, for more information see docs/configuration/authentication/sso.md
 #
-# SOCIAL_AUTH_POSTGRES_JSONFIELD = False
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
-
+AUTHENTICATION_BACKENDS.append('social_core.backends.github.GithubOAuth2')
+#     'nautobot.core.authentication.ObjectPermissionBackend',
+AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.ModelBackend')
+logger.debug(f'{AUTHENTICATION_BACKENDS}')
 # By default uploaded media is stored on the local filesystem. Using
 # Django-storages is also supported. Provide the
 # class path of the storage driver in STORAGE_BACKEND and any configuration
@@ -684,12 +695,13 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # Each string should be a dotted Python path to an application configuration class (preferred),
 # or a package containing an application.
 # https://docs.nautobot.com/projects/core/en/latest/configuration/optional-settings/#extra-applications
-EXTRA_INSTALLED_APPS = [
-    'django.contrib.contenttypes.models.ContentType',
-]
+# EXTRA_INSTALLED_APPS = [
+#     'social_django',
+# ]
+# logger.debug(f'{EXTRA_INSTALLED_APPS}')
 # INSTALLED_APPS.append(
 #     'django.contrib.contenttypes',
 # )
 
 # Allow users to enable request profiling on their login session
-# ALLOW_REQUEST_PROFILING = False
+ALLOW_REQUEST_PROFILING = True

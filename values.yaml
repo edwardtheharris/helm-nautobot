@@ -149,7 +149,7 @@ superUser:
   token: ""
   username: ""
 tolerations: []
-type: StatefulSet
+type: Deployment
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
 # - mountPath: "/mnt/k8s/psql"
