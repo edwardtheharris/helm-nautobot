@@ -3,7 +3,9 @@ import os
 
 from loguru import logger
 
+from nautobot.core.settings import ALLOWED_URL_SCHEMES
 from nautobot.core.settings import AUTHENTICATION_BACKENDS
+from nautobot.core.settings import INSTALLED_APPS
 from nautobot.core.settings import JOBS_ROOT
 from nautobot.core.settings import MAINTENANCE_MODE
 from nautobot.core.settings import METRICS_ENABLED
@@ -122,14 +124,19 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 #                                   #
 #####################################
 
-# Specify one or more (name, email address) tuples representing Nautobot administrators.
-# These people will be notified of application errors (assuming correct email settings are provided).
+# Specify one or more (name, email address) tuples representing Nautobot
+# administrators.
+# These people will be notified of application errors (assuming correct email
+# settings are provided).
 #
 # ADMINS = []
 
-# FQDNs that are considered trusted origins for secure, cross-domain, requests such as HTTPS POST.
-# If running Nautobot under a single domain, you may not need to set this variable;
-# if running on multiple domains, you *may* need to set this variable to more or less the same as ALLOWED_HOSTS above.
+# FQDNs that are considered trusted origins for secure, cross-domain, requests
+# such as HTTPS POST.
+# If running Nautobot under a single domain, you may not need to set this
+# variable;
+# if running on multiple domains, you *may* need to set this variable to more
+# or less the same as ALLOWED_HOSTS above.
 # https://docs.djangoproject.com/en/stable/ref/settings/#csrf-trusted-origins
 #
 # CSRF_TRUSTED_ORIGINS = []
@@ -143,14 +150,18 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 # DATETIME_FORMAT = os.getenv("NAUTOBOT_DATETIME_FORMAT", "N j, Y g:i a")
 # SHORT_DATETIME_FORMAT = os.getenv("NAUTOBOT_SHORT_DATETIME_FORMAT", "Y-m-d H:i")
 
-# Set to True to enable server debugging. WARNING: Debugging introduces a substantial performance penalty and may reveal
-# sensitive information about your installation. Only enable debugging while performing testing. Never enable debugging
+# Set to True to enable server debugging. WARNING: Debugging introduces a
+# substantial performance penalty and may reveal
+# sensitive information about your installation. Only enable debugging while
+# performing testing. Never enable debugging
 # on a production system.
 #
 # DEBUG = is_truthy(os.getenv("NAUTOBOT_DEBUG", "False"))
 
-# If hosting Nautobot in a subdirectory, you must set this value to match the base URL prefix configured in your
-# HTTP server (e.g. `/nautobot/`). When not set, URLs will default to being prefixed by `/`.
+# If hosting Nautobot in a subdirectory, you must set this value to match the
+# base URL prefix configured in your
+# HTTP server (e.g. `/nautobot/`). When not set, URLs will default to
+# being prefixed by `/`.
 #
 # FORCE_SCRIPT_NAME = None
 
@@ -158,7 +169,8 @@ SECRET_KEY = os.getenv("NAUTOBOT_SECRET_KEY", "57evlrs^0pmu5#ys=9t6==lf6hdz&amp;
 #
 # INTERNAL_IPS = ("127.0.0.1", "::1")
 
-# Enable custom logging. Please see the Django documentation for detailed guidance on configuring custom logs:
+# Enable custom logging. Please see the Django documentation for detailed
+# guidance on configuring custom logs:
 #   https://docs.djangoproject.com/en/stable/topics/logging/
 #
 # LOGGING = {
@@ -203,12 +215,15 @@ MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 # Set to True to use session cookies instead of persistent cookies.
 # Session cookies will expire when a browser is closed.
 #
-# SESSION_EXPIRE_AT_BROWSER_CLOSE = is_truthy(os.getenv("NAUTOBOT_SESSION_EXPIRE_AT_BROWSER_CLOSE", "False"))
+SESSION_EXPIRE_AT_BROWSER_CLOSE = is_truthy(
+    os.getenv("NAUTOBOT_SESSION_EXPIRE_AT_BROWSER_CLOSE", "False"))
 
-# The length of time (in seconds) for which a user will remain logged into the web UI before being prompted to
+# The length of time (in seconds) for which a user will remain logged into
+# the web UI before being prompted to
 # re-authenticate. (Default: 1209600 [14 days])
 #
-# SESSION_COOKIE_AGE = int(os.getenv("NAUTOBOT_SESSION_COOKIE_AGE", "1209600"))  # 2 weeks, in seconds
+SESSION_COOKIE_AGE = int(
+    os.getenv("NAUTOBOT_SESSION_COOKIE_AGE", "1209600"))  # 2 weeks, in seconds
 
 # Where Nautobot stores user session data.
 #
@@ -238,29 +253,31 @@ STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 ###################################################################
 
 # Allow users to enable request profiling via django-silk for admins to inspect.
-# if "NAUTOBOT_ALLOW_REQUEST_PROFILING" in os.environ and os.environ["NAUTOBOT_ALLOW_REQUEST_PROFILING"] != "":
+# if ("NAUTOBOT_ALLOW_REQUEST_PROFILING" in os.environ
+#       and os.environ["NAUTOBOT_ALLOW_REQUEST_PROFILING"] != ""):
 #     ALLOW_REQUEST_PROFILING = is_truthy(os.environ["NAUTOBOT_ALLOW_REQUEST_PROFILING"])
 
 # URL schemes that are allowed within links in Nautobot
 #
-# ALLOWED_URL_SCHEMES = (
-#     "file",
-#     "ftp",
-#     "ftps",
-#     "http",
-#     "https",
-#     "irc",
-#     "mailto",
-#     "sftp",
-#     "ssh",
-#     "tel",
-#     "telnet",
-#     "tftp",
-#     "vnc",
-#     "xmpp",
-# )
+ALLOWED_URL_SCHEMES = (
+    "file",
+    "ftp",
+    "ftps",
+    "http",
+    "https",
+    "irc",
+    "mailto",
+    "sftp",
+    "ssh",
+    "tel",
+    "telnet",
+    "tftp",
+    "vnc",
+    "xmpp",
+)
 
-# Banners (HTML is permitted) to display at the top and/or bottom of all Nautobot pages, and on the login page itself.
+# Banners (HTML is permitted) to display at the top and/or bottom of all
+# Nautobot pages, and on the login page itself.
 #
 # if "NAUTOBOT_BANNER_BOTTOM" in os.environ and os.environ["NAUTOBOT_BANNER_BOTTOM"] != "":
 #     BANNER_BOTTOM = os.environ["NAUTOBOT_BANNER_BOTTOM"]
@@ -269,7 +286,8 @@ STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 # if "NAUTOBOT_BANNER_TOP" in os.environ and os.environ["NAUTOBOT_BANNER_TOP"] != "":
 #     BANNER_TOP = os.environ["NAUTOBOT_BANNER_TOP"]
 
-# Branding logo locations. The logo takes the place of the Nautobot logo in the top right of the nav bar.
+# Branding logo locations. The logo takes the place of the Nautobot logo in the
+# top right of the nav bar.
 # The filepath should be relative to the `MEDIA_ROOT`.
 #
 # BRANDING_FILEPATHS = {
@@ -287,9 +305,11 @@ STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 #     "header_bullet": os.getenv(
 #         "NAUTOBOT_BRANDING_FILEPATHS_HEADER_BULLET", None
 #     ),  # bullet image used for various view headers
-#     "nav_bullet": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_NAV_BULLET", None),  # bullet image used for nav menu headers
+#     "nav_bullet": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_NAV_BULLET", None),
+# # bullet image used for nav menu headers
 #     "css": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_CSS", None),  # Custom global CSS
-#     "javascript": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_JAVASCRIPT", None),  # Custom global JavaScript
+#     "javascript": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_JAVASCRIPT", None),
+# # Custom global JavaScript
 # }
 
 # Prepended to CSV, YAML and export template filenames (i.e. `nautobot_device.yml`)
@@ -313,20 +333,24 @@ STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 # CELERY_BROKER_TRANSPORT_OPTIONS = {}
 
 # Default celery queue name that will be used by workers and tasks if no queue is specified
-# CELERY_TASK_DEFAULT_QUEUE = os.getenv("NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE", "default")
+CELERY_TASK_DEFAULT_QUEUE = os.getenv("NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE", "default")
 
 # Global task time limits (seconds)
 # Exceeding the soft limit will result in a SoftTimeLimitExceeded exception,
 # while exceeding the hard limit will result in a SIGKILL.
 #
-# CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_SOFT_TIME_LIMIT", str(5 * 60)))
-# CELERY_TASK_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_TIME_LIMIT", str(10 * 60)))
+CELERY_TASK_SOFT_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_SOFT_TIME_LIMIT", str(5 * 60)))
+CELERY_TASK_TIME_LIMIT = int(os.getenv("NAUTOBOT_CELERY_TASK_TIME_LIMIT", str(10 * 60)))
 
 # Ports for prometheus metric HTTP server running on the celery worker.
-# Normally this should be set to a single port, unless you have multiple workers running on a single machine, i.e.
-# sharing the same available ports. In that case you need to specify a range of ports greater than or equal to the
-# highest amount of workers you are running on a single machine (comma-separated, like "8080,8081,8082"). You can then
-# use the `target_limit` parameter to the Prometheus `scrape_config` to ensure you are not getting duplicate metrics in
+# Normally this should be set to a single port, unless you have multiple
+# workers running on a single machine, i.e.
+# sharing the same available ports. In that case you need to specify a range
+# of ports greater than or equal to the
+# highest amount of workers you are running on a single machine
+# (comma-separated, like "8080,8081,8082"). You can then
+# use the `target_limit` parameter to the Prometheus `scrape_config` to ensure
+# you are not getting duplicate metrics in
 # that case. Set this to an empty string to disable it.
 # CELERY_WORKER_PROMETHEUS_PORTS = []
 # if os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS"):
@@ -335,9 +359,11 @@ STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 #     ]
 
 
-# Number of days to retain changelog entries. Set to 0 to retain changes indefinitely. Defaults to 90 if not set here.
+# Number of days to retain changelog entries. Set to 0 to retain changes
+# indefinitely. Defaults to 90 if not set here.
 #
-# if "NAUTOBOT_CHANGELOG_RETENTION" in os.environ and os.environ["NAUTOBOT_CHANGELOG_RETENTION"] != "":
+# if ("NAUTOBOT_CHANGELOG_RETENTION" in os.environ
+#         and os.environ["NAUTOBOT_CHANGELOG_RETENTION"] != ""):
 #     CHANGELOG_RETENTION = int(os.environ["NAUTOBOT_CHANGELOG_RETENTION"])
 
 # If True, all origins will be allowed. Other settings restricting allowed origins will be ignored.
@@ -345,7 +371,7 @@ STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 # cross-origin requests to yours. Generally you'll want to restrict the list of allowed origins with
 # CORS_ALLOWED_ORIGINS or CORS_ALLOWED_ORIGIN_REGEXES.
 #
-# CORS_ALLOW_ALL_ORIGINS = is_truthy(os.getenv("NAUTOBOT_CORS_ALLOW_ALL_ORIGINS", "False"))
+CORS_ALLOW_ALL_ORIGINS = is_truthy(os.getenv("NAUTOBOT_CORS_ALLOW_ALL_ORIGINS", "False"))
 
 # A list of origins that are authorized to make cross-site HTTP requests. Defaults to [].
 #
@@ -604,9 +630,9 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # EXTRA_INSTALLED_APPS = [
 #     'django.contrib.contenttypes.models.ContentType',
 # ]
-# INSTALLED_APPS = [
-#     'django.contrib.contenttypes.models.ContentType',
-# ]
+INSTALLED_APPS.append(
+    'django.contrib.contenttypes.models.ContentType',
+)
 
 # Allow users to enable request profiling on their login session
 # ALLOW_REQUEST_PROFILING = False

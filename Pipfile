@@ -18,3 +18,6 @@ sphinx-design = "*"
 sphinx-book-theme = "*"
 version-query = "*"
 pylint = "*"
+
+[nautobot]
+nautobot = "*"

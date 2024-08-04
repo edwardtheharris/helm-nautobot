@@ -40,6 +40,8 @@ spec:
               value: {{ .Values.config.caches_backend }}
             - name: NAUTOBOT_CREATE_SUPERUSER
               value: {{ .Values.superUser.create | quote }}
+            - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
+              value: 'True'
             - name: NAUTOBOT_DB_ENGINE
               value: {{ .Values.database.engine }}
             - name: NAUTOBOT_DB_HOST
@@ -81,9 +83,15 @@ spec:
                   name: {{ .Values.superUser.secret.name }}
                   key: password
             - name: SOCIAL_AUTH_GITHUB_KEY
-              value: {{ .Values.nautobot.social_auth_github_key }}
+              valueFrom:
+                secretKeyRef:
+                  name: secret.github.sso
+                  key: social_auth_github_key
             - name: SOCIAL_AUTH_GITUB_SECRET
-              value: {{ .Values.nautobot.social_auth_github_secret }}
+              valueFrom:
+                secretKeyRef:
+                  name: secret.github.sso
+                  key: social_auth_github_secret
           volumeMounts:
             - name: nautobot-config
               mountPath: /opt/nautobot/
