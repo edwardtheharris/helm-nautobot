@@ -1,4 +1,5 @@
 """Nautobot configuration settings."""
+import logging
 import os
 import tempfile
 
@@ -17,6 +18,7 @@ from nautobot.core.settings import INSTALLED_APPS
 from nautobot.core.settings import JOBS_ROOT
 from nautobot.core.settings import MAINTENANCE_MODE
 from nautobot.core.settings import METRICS_ENABLED
+from nautobot.core.settings import MIDDLEWARE
 from nautobot.core.settings import NAUTOBOT_ROOT
 from nautobot.core.settings import PLUGINS
 from nautobot.core.settings import ROOT_URLCONF
@@ -35,6 +37,8 @@ from nautobot.core.settings_funcs import parse_redis_connection
 #                       #
 #########################
 
+logger.add(logging.StreamHandler)
+logger.debug(f'cache ops defaults: {MIDDLEWARE}')
 logger.debug(f'cache ops defaults: {CACHEOPS_DEFAULTS}')
 logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
 logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
@@ -193,40 +197,44 @@ SECRET_KEY = os.getenv(
 # guidance on configuring custom logs:
 #   https://docs.djangoproject.com/en/stable/topics/logging/
 #
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "formatters": {
-#         "normal": {
-#             "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s :\n  %(message)s",
-#             "datefmt": "%H:%M:%S",
-#         },
-#         "verbose": {
-#             "format": "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s
-#                   %(filename)-15s %(funcName)30s() :\n  %(message)s",
-#             "datefmt": "%H:%M:%S",
-#         },
-#     },
-#     "handlers": {
-#         "normal_console": {
-#             "level": "INFO",
-#             "class": "logging.StreamHandler",
-#             "formatter": "normal",
-#         },
-#         "verbose_console": {
-#             "level": "DEBUG",
-#             "class": "logging.StreamHandler",
-#             "formatter": "verbose",
-#         },
-#     },
-#     "loggers": {
-#         "django": {"handlers": ["normal_console"], "level": "INFO"},
-#         "nautobot": {
-#             "handlers": ["verbose_console" if DEBUG else "normal_console"],
-#             "level": "DEBUG" if DEBUG else "INFO",
-#         },
-#     },
-# }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "normal": {
+            "format": (
+                "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s :\n  %(message)s"
+                ),
+            "datefmt": "%H:%M:%S",
+        },
+        "verbose": {
+            "format": (
+                "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s "
+                "%(filename)-15s %(funcName)30s() :\n  %(message)s"
+            ),
+            "datefmt": "%H:%M:%S",
+        },
+    },
+    "handlers": {
+        "normal_console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "normal",
+        },
+        "verbose_console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {"handlers": ["normal_console"], "level": "INFO"},
+        "nautobot": {
+            "handlers": ["verbose_console" if DEBUG else "normal_console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+        },
+    },
+}
 
 # The file path where uploaded media such as image attachments are stored.
 # A trailing slash is not needed.
