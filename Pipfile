@@ -7,7 +7,7 @@ name = "pypi"
 gitpython = "*"
 loguru = "*"
 pipenv = "*"
-nautobot = "*"
+nautobot = {extras = ["sso"], version = "*"}
 
 [dev-packages]
 "sphinxcontrib.autoyaml" = "*"
