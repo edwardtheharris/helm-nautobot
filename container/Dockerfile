@@ -5,7 +5,18 @@ LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-n
 LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1"
 USER root
 COPY container/entrypoint.sh /bin/entrypoint.sh
-RUN apk add --no-cache alpine-sdk bash git iputils-ping jpeg-dev nmap python3-dev shadow vim zlib-dev \
+RUN apk add --no-cache \
+    alpine-sdk \
+    bash \
+    git \
+    iputils-ping \
+    jpeg-dev \
+    nmap \
+    python3-dev \
+    shadow \
+    vim \
+    xmlsec-dev \
+    zlib-dev \
     && groupadd nautobot \
     && useradd -m -d /opt/nautobot -s /bin/bash -g nautobot nautobot \
     && chmod +x /bin/entrypoint.sh
