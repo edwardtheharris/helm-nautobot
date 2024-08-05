@@ -14,4 +14,36 @@ spec:
       name: nautobot
   selector:
     {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery-beat
+  labels:
+    service.kubernetes.io/name: celery-beat
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 5672
+      targetPort: 5672
+      protocol: TCP
+      name: celery-beat
+  selector:
+    {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery-worker
+  labels:
+    service.kubernetes.io/name: celery-worker
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 5673
+      targetPort: 5673
+      protocol: TCP
+      name: nautobot
+  selector:
+    {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
 {{ end }}

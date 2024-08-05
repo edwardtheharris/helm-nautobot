@@ -29,12 +29,12 @@ spec:
             - '-f'
             - /dev/null
           env:
-            - name: CELERY_BROKER_URL
-              value: redis.redis.svc.cluster.local
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
+            - name: NAUTOBOT_CELERY_BROKER_URL
+              value: redis://redis.redis.svc.cluster.local:6379/0
             - name: NAUTOBOT_CELERY_RESULT_BACKEND
-              value: redis://redis.redis.svc.cluster.local:6379/1
+              value: amqp://celery-beat.nautobot.svc.cluster.local:5762
             - name: NAUTOBOT_CACHES_BACKEND
               value: {{ .Values.config.caches_backend }}
             - name: NAUTOBOT_CREATE_SUPERUSER
@@ -103,8 +103,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8001
-              name: celery
+            - containerPort: 5672
+              name: celery-beat
           volumeMounts:
             - name: celery-config
               mountPath: /opt/celery/.nautobot
@@ -117,12 +117,12 @@ spec:
             - '-f'
             - /dev/null
           env:
-            - name: CELERY_BROKER_URL
-              value: redis.redis.svc.cluster.local
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
+            - name: NAUTOBOT_CELERY_BROKER_URL
+              value: redis://redis.redis.svc.cluster.local:6379/0
             - name: NAUTOBOT_CELERY_RESULT_BACKEND
-              value: redis://redis.redis.svc.cluster.local:6379/1
+              value: amqp://celery-beat.nautobot.svc.cluster.local:5762
             - name: NAUTOBOT_CACHES_BACKEND
               value: {{ .Values.config.caches_backend }}
             - name: NAUTOBOT_CREATE_SUPERUSER
@@ -191,7 +191,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8001
+            - containerPort: 5673
               name: celery
           volumeMounts:
             - name: celery-config
@@ -216,6 +216,10 @@ spec:
               value: {{ .Values.config.allowed_hosts | quote }}
             - name: NAUTOBOT_CACHES_BACKEND
               value: {{ .Values.config.caches_backend }}
+            - name: NAUTOBOT_CELERY_BROKER_URL
+              value: redis://redis.redis.svc.cluster.local:6379/0
+            - name: NAUTOBOT_CELERY_RESULT_BACKEND
+              value: amqp://celery-beat.nautobot.svc.cluster.local:5762
             - name: NAUTOBOT_CREATE_SUPERUSER
               value: {{ .Values.superUser.create | quote }}
             - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS

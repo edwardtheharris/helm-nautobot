@@ -2,9 +2,10 @@ FROM python:3.11-alpine AS nautobot
 LABEL io.ghcr.edwardtheharris.helm-nautobot.editor="Xander Harris"
 LABEL io.ghcr.edwardtheharris.helm-nautobot.name="nautobot"
 LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-nautobot"
-LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc26"
+LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc27"
 USER root
 COPY container/entrypoint.sh /bin/entrypoint.sh
+COPY container/Pipfile /opt/Pipfile
 RUN apk add --no-cache \
     alpine-sdk \
     bash \
@@ -28,6 +29,7 @@ RUN apk add --no-cache \
     --no-binary=xmlsec \
     nautobot[sso] \
     pip \
+    pipenv \
     wheel
 USER nautobot
 RUN python -m venv /opt/nautobot \
