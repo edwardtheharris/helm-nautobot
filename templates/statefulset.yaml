@@ -72,7 +72,7 @@ spec:
             - name: NAUTOBOT_DB_ENGINE
               value: {{ .Values.database.engine }}
             - name: NAUTOBOT_DB_HOST
-              value: psql://{{ .Values.database.host }}:5432
+              value: postgresql.postgresql.svc.cluster.local
             - name: NAUTOBOT_DB_NAME
               value: {{ .Values.database.database }}
             - name: NAUTOBOT_DB_PASSWORD
