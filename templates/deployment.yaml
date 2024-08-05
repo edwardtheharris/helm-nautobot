@@ -1,23 +1,76 @@
 {{- if eq .Values.type "Deployment" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    name: {{ .Release.Name }}
+    volume.kubernetes.io/name: {{ .Release.Name }}
+    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/component: primary
+    pvc.kubernetes.io/instance: {{ .Release.Name }}
+    pvc.kubernetes.io/name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-opt
+  namespace: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: csi-driver-lvm-linear
+  volumeMode: Filesystem
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: {{ .Values.nameOverride }}
   labels:
-    app: nginx
+    deployment.kubernetes.io/name: {{ .Values.nameOverride }}
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app.kubernetes.io/name: nautobot
   template:
     metadata:
+      annotations:
+        app.kubernetes.io/name: nautobot
       labels:
-        app: nginx
+        app.kubernetes.io/name: nautobot
+      name: nautobot
     spec:
       containers:
-        - name: nginx
-          image: nginx:1.14.2
+        - name: {{ .Values.nameOverride }}
+          command:
+            - tail
+            - '-f'
+            - /dev/null
+          env:
+            - name: NAUTOBOT_ROOT
+              value: /opt/nautobot
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 8000
+              name: nautobot
+          volumeMounts:
+            - mountPath: /opt/
+              name: {{ .Values.nameOverride }}-opt
+              subPath: nautobot
+            - mountPath: /opt/nautobot/
+              name: nautobot-configmap
+              subPath: .nautobot
+      imagePullSecrets:
+        - name: secret.github.ghcr
+      volumes:
+        - name: {{ .Values.nameOverride }}-configmap
+          configMap:
+            name: nautobot-config
+        - name: {{ .Values.nameOverride }}-opt
+          persistentVolumeClaim:
+            claimName: {{ .Values.nameOverride }}-opt
 {{ end }}

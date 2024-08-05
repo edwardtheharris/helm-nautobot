@@ -7,7 +7,7 @@ name = "pypi"
 gitpython = "*"
 loguru = "*"
 pipenv = "*"
-nautobot = "*"
+nautobot = {extras = ["sso"], version = "*"}
 
 [dev-packages]
 "sphinxcontrib.autoyaml" = "*"
@@ -18,3 +18,7 @@ sphinx-design = "*"
 sphinx-book-theme = "*"
 version-query = "*"
 pylint = "*"
+
+[nautobot]
+nautobot = "*"
+celery = "*"

@@ -4,16 +4,17 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   annotations:
-    name: nautobot
-    app.kubernetes.io/name: nautobot
-    volume.kubernetes.io/storage-provisioner: usb
+    name: {{ .Release.Name }}-striped
+    app.kubernetes.io/name: {{ .Release.Name }}-striped
+    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+    pvc.kubernetes.io/name: {{ .Release.Name }}-striped
   finalizers:
     - kubernetes.io/pvc-protection
   labels:
     app.kubernetes.io/component: primary
-    app.kubernetes.io/instance: nautobot
-    app.kubernetes.io/name: nautobot
-  name: nautobot
+    pvc.kubernetes.io/instance: {{ .Release.Name }}-striped
+    pvc.kubernetes.io/name: {{ .Release.Name }}-striped
+  name: {{ .Release.Name }}-striped
   namespace: nautobot
 spec:
   accessModes:
@@ -21,31 +22,6 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: usb
-  volumeMode: Filesystem
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    name: nautobot
-    app.kubernetes.io/name: nautobot
-    volume.kubernetes.io/storage-provisioner: usb
-    volume.kubernetes.io/name: git
-  finalizers:
-    - kubernetes.io/pvc-protection
-  labels:
-    app.kubernetes.io/component: primary
-    app.kubernetes.io/instance: nautobot
-    app.kubernetes.io/name: nautobot
-  name: git
-  namespace: nautobot
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: usb
+  storageClassName: csi-driver-lvm-striped
   volumeMode: Filesystem
 {{ end }}
