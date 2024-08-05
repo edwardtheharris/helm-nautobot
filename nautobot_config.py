@@ -649,9 +649,10 @@ logger.debug(f'{REMOTE_AUTH_HEADER}')
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
-AUTHENTICATION_BACKENDS.append('social_core.backends.github.GithubOAuth2')
-#     'nautobot.core.authentication.ObjectPermissionBackend',
-AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.ModelBackend')
+AUTHENTICATION_BACKENDS = [
+    "social_core.backends.github.GithubOAuth2",
+    "nautobot.core.authentication.ObjectPermissionBackend",
+]
 logger.debug(f'{AUTHENTICATION_BACKENDS}')
 # By default uploaded media is stored on the local filesystem. Using
 # Django-storages is also supported. Provide the
