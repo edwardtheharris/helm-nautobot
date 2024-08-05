@@ -1,5 +1,6 @@
 """Nautobot configuration settings."""
 import os
+import re
 import tempfile
 
 from loguru import logger
@@ -67,8 +68,9 @@ logger.debug(STORAGE_CONFIG)
 
 AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = [
-    "social_core.backends.github.GithubOAuth2",
-    "nautobot.core.authentication.ObjectPermissionBackend",
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    'nautobot.core.authentication.ObjectPermissionBackend',
 ]
 logger.debug(f'{AUTHENTICATION_BACKENDS}')
 
@@ -643,20 +645,20 @@ logger.debug(f'{REMOTE_AUTH_HEADER}')
 
 # Job log entry sanitization and similar
 #
-# SANITIZER_PATTERNS = [
+SANITIZER_PATTERNS = [
 #     # General removal of username-like and password-like tokens
-#     (re.compile(r"(https?://)?\S+\s*@", re.IGNORECASE), r"\1{replacement}@"),
-#     (
-#         re.compile(
-    # r"(username|password|passwd|pwd|secret|secrets)([\"']?(?:\s+is.?|:)?\s+)\S+[\"']?",
-    # re.IGNORECASE),
-#         r"\1\2{replacement}",
-#     ),
-# ]
+    (re.compile(r"(https?://)?\S+\s*@", re.IGNORECASE), r"\1{replacement}@"),
+    (re.compile(
+    r'(username|password|passwd|pwd|secret|secrets)([\"\']?(?:\s+is.?|:)?\s+)\S+["\']?',
+    re.IGNORECASE),
+        r"\1\2{replacement}",
+    ),
+]
 
 # Configure SSO, for more information see docs/configuration/authentication/sso.md
 #
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
+SOCIAL_AUTH_BACKEND_PREFIX = 'social_core.backends'
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 
