@@ -65,6 +65,13 @@ logger.debug(STATIC_ROOT)
 logger.debug(STORAGE_BACKEND)
 logger.debug(STORAGE_CONFIG)
 
+AUTH_USER_MODEL = "users.User"
+AUTHENTICATION_BACKENDS = [
+    "social_core.backends.github.GithubOAuth2",
+    "nautobot.core.authentication.ObjectPermissionBackend",
+]
+logger.debug(f'{AUTHENTICATION_BACKENDS}')
+
 # The django-redis cache is used to establish concurrent locks using Redis.
 #
 # "django_prometheus.cache.backends.redis.RedisCache"
@@ -73,6 +80,7 @@ CACHES = {
     "default": {
         "BACKEND": os.getenv(
             "NAUTOBOT_CACHES_BACKEND",
+            'django_redis.cache.RedisCache'
         ),
         "LOCATION": parse_redis_connection(redis_database=1),
         "TIMEOUT": 300,
@@ -433,6 +441,8 @@ CORS_ALLOW_ALL_ORIGINS = is_truthy(os.getenv("NAUTOBOT_CORS_ALLOW_ALL_ORIGINS", 
 #       os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"] != "":
 #     DEVICE_NAME_AS_NATURAL_KEY = is_truthy(os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"])
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # The number of seconds to cache the member list of dynamic groups.
 # Set this to `0` to disable caching.
 #
@@ -649,11 +659,7 @@ logger.debug(f'{REMOTE_AUTH_HEADER}')
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
-AUTHENTICATION_BACKENDS = [
-    "social_core.backends.github.GithubOAuth2",
-    "nautobot.core.authentication.ObjectPermissionBackend",
-]
-logger.debug(f'{AUTHENTICATION_BACKENDS}')
+
 # By default uploaded media is stored on the local filesystem. Using
 # Django-storages is also supported. Provide the
 # class path of the storage driver in STORAGE_BACKEND and any configuration

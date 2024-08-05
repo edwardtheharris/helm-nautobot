@@ -96,7 +96,10 @@ spec:
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
             - name: NAUTOBOT_SECRET_KEY
-              value: {{ .Values.superUser.secretKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: secret.superuser
+                  key: secretKey
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
               valueFrom:
                 secretKeyRef:
