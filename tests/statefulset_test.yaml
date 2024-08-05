@@ -4,6 +4,10 @@
 # ---
 # Tests to validate the deployment of the described StatefulSet.
 suite: test for statefulset
+release:
+  name: nautobot
+set:
+  type: StatefulSet
 templates:
   - statefulset.yaml
 tests:
@@ -12,9 +16,5 @@ tests:
           of: StatefulSet
       - equal:
           path: metadata.name
-          pattern: postgres
+          value: nautobot
     it: should be a StatefulSet
-    set:
-      postgresql:
-        name: postgres
-
