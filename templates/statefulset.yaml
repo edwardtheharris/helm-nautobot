@@ -66,7 +66,7 @@ spec:
                   name: secret.{{ .Values.database.name }}
                   key: username
             - name: NAUTOBOT_ROOT
-              value: /opt/nautobot
+              value: /opt/celery
             - name: NAUTOBOT_REDIS_HOST
               value: redis.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
@@ -106,10 +106,12 @@ spec:
             - containerPort: 8001
               name: celery
           volumeMounts:
-            - name: nautobot-config
-              mountPath: /opt/nautobot/.nautobot
-            - name: {{ .Values.persistence.name }}
-              mountPath: /opt/nautobot
+            - name: celery-config
+              mountPath: /opt/celery/.nautobot
+              subPath: .nautbot
+            - name: celery
+              mountPath: /opt/celery
+              subPath: celery
         - name: nautobot
           # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
@@ -199,18 +201,21 @@ spec:
       securityContext:
         fsGroup: 1000
       volumes:
+        - name: celery-config
+          configMap:
+            name: celery-config
         - name: {{ .Values.config.name }}
           configMap:
             name: nautobot-config
   volumeClaimTemplates:
     - metadata:
-        name: {{ .Values.persistence.name }}-celery
+        name: celery
       spec:
         accessModes:
           - ReadWriteOnce
         resources:
           requests:
-            storage: {{ .Values.persistence.size }}
+            storage: 10Gi
         storageClassName: {{ .Values.persistence.storageClass }}
         volumeMode: Filesystem
     - metadata:
