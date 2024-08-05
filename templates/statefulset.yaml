@@ -108,7 +108,6 @@ spec:
           volumeMounts:
             - name: celery-config
               mountPath: /opt/celery/.nautobot
-              subPath: .nautbot
             - name: celery-beat
               mountPath: /opt/celery
               subPath: celery
