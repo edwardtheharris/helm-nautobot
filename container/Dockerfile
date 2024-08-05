@@ -10,8 +10,10 @@ RUN apk add --no-cache \
     bash \
     git \
     iputils-ping \
+    libxml2-dev \
     jpeg-dev \
     nmap \
+    pkgconfig \
     python3-dev \
     shadow \
     vim \
