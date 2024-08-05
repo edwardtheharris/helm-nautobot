@@ -4,17 +4,20 @@
 # ---
 # Tests to validate the deployment of the described Deployment.
 suite: test for deployment
+release:
+  name: nautobot
+set:
+  type: Deployment
 templates:
   - deployment.yaml
+values:
+  - ../values.yaml
 tests:
   - asserts:
       - isKind:
           of: Deployment
       - equal:
           path: metadata.name
-          pattern: nautobot
+          value: nautobot
     it: should be a Deployment
-    set:
-      nautobot:
-        name: nautobot
-
+    documentIndex: 1
