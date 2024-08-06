@@ -22,4 +22,4 @@ data:
     {{- $.Files.Get "config/nautobot_config.py" | nindent 4 }}
 
   .bashrc: |-
-    {{- $.Files.Get "config/nb.bashrc" | nindent 4 }}
+    {{- $.Files.Get "config/celery.bashrc" | nindent 4 }}
