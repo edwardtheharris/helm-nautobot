@@ -6,7 +6,7 @@ import tempfile
 from loguru import logger
 
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
-from nautobot.core.settings import AUTHENTICATION_BACKENDS
+# from nautobot.core.settings import AUTHENTICATION_BACKENDS
 from nautobot.core.settings import CACHES
 # from nautobot.core.settings import CACHEOPS_DEFAULTS
 # from nautobot.core.settings import CACHEOPS_ENABLED
@@ -56,7 +56,7 @@ logger.debug(f'secret key: {SECRET_KEY}')
 ALLOWED_HOSTS = os.getenv("NAUTOBOT_ALLOWED_HOSTS", "").split(" ")
 
 
-logger.debug(AUTHENTICATION_BACKENDS)
+# logger.debug(AUTHENTICATION_BACKENDS)
 logger.debug(JOBS_ROOT)
 logger.debug(MAINTENANCE_MODE)
 logger.debug(METRICS_ENABLED)
@@ -66,13 +66,13 @@ logger.debug(STATIC_ROOT)
 logger.debug(STORAGE_BACKEND)
 logger.debug(STORAGE_CONFIG)
 
-AUTH_USER_MODEL = "users.User"
-AUTHENTICATION_BACKENDS = [
-    'social_core.backends.github.GithubOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-    'nautobot.core.authentication.ObjectPermissionBackend',
-]
-logger.debug(f'{AUTHENTICATION_BACKENDS}')
+# AUTH_USER_MODEL = "users.User"
+# AUTHENTICATION_BACKENDS = [
+#     # 'social_core.backends.github.GithubOAuth2',
+#     # 'django.contrib.auth.backends.ModelBackend',
+#     'nautobot.core.authentication.ObjectPermissionBackend',
+# ]
+# logger.debug(f'{AUTHENTICATION_BACKENDS}')
 
 # The django-redis cache is used to establish concurrent locks using Redis.
 #
@@ -181,9 +181,9 @@ DATETIME_FORMAT = os.getenv("NAUTOBOT_DATETIME_FORMAT", "N j, Y g:i a")
 SHORT_DATETIME_FORMAT = os.getenv("NAUTOBOT_SHORT_DATETIME_FORMAT", "Y-m-d H:i")
 
 logger.debug(f'templates: {TEMPLATES}')
-MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
-MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
-MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
+# MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
+# MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
+# MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
 
 
 # Set to True to enable server debugging. WARNING: Debugging introduces a
