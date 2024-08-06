@@ -26,7 +26,7 @@ from nautobot.core.settings import ROOT_URLCONF
 from nautobot.core.settings import SANITIZER_PATTERNS
 from nautobot.core.settings import SECRET_KEY
 from nautobot.core.settings import STATIC_ROOT
-from nautobot.core.settings import STATIC_URL
+# from nautobot.core.settings import STATIC_URL
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
 from nautobot.core.settings import TEMPLATES
@@ -221,8 +221,8 @@ LOGGING = {
         },
         "verbose": {
             "format": (
-                "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s "
-                "%(filename)-15s %(funcName)30s() :\n  %(message)s"
+                '%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s '
+                '%(filename)-15s %(funcName)30s() :\n  %(message)s'
             ),
             "datefmt": "%H:%M:%S",
         },
@@ -251,7 +251,7 @@ LOGGING = {
 # The file path where uploaded media such as image attachments are stored.
 # A trailing slash is not needed.
 #
-MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
+# MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 
 # Set to True to use session cookies instead of persistent cookies.
 # Session cookies will expire when a browser is closed.
@@ -281,9 +281,9 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # Where static files (CSS, JavaScript, etc.) are stored
 #
-STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
-STATIC_URL = 'static/'
-logger.debug(STATIC_URL)
+# STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
+# STATIC_URL = 'static/'
+# logger.debug(STATIC_URL)
 
 # Time zone (default: UTC)
 #
@@ -396,7 +396,7 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 # use the `target_limit` parameter to the Prometheus `scrape_config` to ensure
 # you are not getting duplicate metrics in
 # that case. Set this to an empty string to disable it.
-# CELERY_WORKER_PROMETHEUS_PORTS = []
+# CELERY_WORKER_PROMETaHEUS_PORTS = []
 # if os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS"):
 #     CELERY_WORKER_PROMETHEUS_PORTS = [
 #         int(value) for value in os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS").split(",")
@@ -646,21 +646,27 @@ logger.debug(f'{REMOTE_AUTH_HEADER}')
 # Job log entry sanitization and similar
 #
 SANITIZER_PATTERNS = [
-#     # General removal of username-like and password-like tokens
-    (re.compile(r"(https?://)?\S+\s*@", re.IGNORECASE), r"\1{replacement}@"),
-    (re.compile(
-    r'(username|password|passwd|pwd|secret|secrets)([\"\']?(?:\s+is.?|:)?\s+)\S+["\']?',
-    re.IGNORECASE),
-        r"\1\2{replacement}",
+    # General removal of username-like and password-like tokens
+    (
+        re.compile(
+            r'(https?://)?\S+\s*@', re.IGNORECASE),
+            r'\1{replacement}@'
+        ),
+    (
+        re.compile(
+            r'(username|password|passwd|pwd|secret|secrets)([\"\']?(?:\s+is.?|:)?\s+)\S+["\']?',
+            re.IGNORECASE
+        ),
+        r'\1\2{replacement}',
     ),
 ]
 
 # Configure SSO, for more information see docs/configuration/authentication/sso.md
 #
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_BACKEND_PREFIX = 'social_core.backends'
-SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
-SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
+# SOCIAL_AUTH_JSONFIELD_ENABLED = True
+# SOCIAL_AUTH_BACKEND_PREFIX = 'social_core.backends'
+# SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
+# SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 
 # By default uploaded media is stored on the local filesystem. Using
 # Django-storages is also supported. Provide the
@@ -713,4 +719,4 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # )
 
 # Allow users to enable request profiling on their login session
-ALLOW_REQUEST_PROFILING = True
+ALLOW_REQUEST_PROFILING = False

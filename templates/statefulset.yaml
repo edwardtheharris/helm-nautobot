@@ -106,8 +106,8 @@ spec:
             - containerPort: 5672
               name: celery-beat
           volumeMounts:
-            - name: celery-config
-              mountPath: /opt/celery/.nautobot
+            - name: nautobot-config
+              mountPath: /opt/celery/
             - name: celery-beat
               mountPath: /opt/celery
               subPath: celery
@@ -195,8 +195,7 @@ spec:
               name: celery
           volumeMounts:
             - name: celery-config
-              mountPath: /opt/celery/.nautobot
-              subPath: .nautbot
+              mountPath: /opt/celery/
             - name: celery-worker
               mountPath: /opt/celery
               subPath: celery
@@ -285,7 +284,7 @@ spec:
                   key: social_auth_github_secret
           volumeMounts:
             - name: nautobot-config
-              mountPath: /opt/nautobot/.nautobot
+              mountPath: /opt/nautobot/
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot
       imagePullSecrets:
@@ -295,10 +294,16 @@ spec:
       volumes:
         - name: celery-config
           configMap:
-            name: celery-config
+            name: nautobot-config
+            items:
+              - key: nautobot_config.py
+                path: 'nautobot_config.py'
         - name: {{ .Values.config.name }}
           configMap:
             name: nautobot-config
+            items:
+              - key: nautobot_config.py
+                path: 'nautobot_config.py'
   volumeClaimTemplates:
     - metadata:
         name: celery-beat
