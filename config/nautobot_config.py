@@ -251,7 +251,7 @@ LOGGING = {
 # The file path where uploaded media such as image attachments are stored.
 # A trailing slash is not needed.
 #
-# MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
+MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 
 # Set to True to use session cookies instead of persistent cookies.
 # Session cookies will expire when a browser is closed.

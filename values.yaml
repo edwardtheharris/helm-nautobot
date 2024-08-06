@@ -20,17 +20,22 @@ autoscaling:
 config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache
+  celery:
+    broker: 'redis://redis.redis.svc.cluster.local:6379/0'
+    name: celery-config
+    results: 'redis://redis.redis.svc.cluster.local:6379/0'
+    root: '/opt/celery'
   name: nautobot-config
 database:
   database: nautobot
   engine: django.db.backends.postgresql
   host: postgresql.postgresql.svc.cluster.local
   name: postgres
-  password: "pg_tmp"
+  password: ""
   port: '5432'
   secretfile: secrets/secrets.yaml
   timeout: '300'
-  username: "pg_tmp"
+  username: ""
 fullnameOverride: "nautobot"
 image:
   pullPolicy: Always
