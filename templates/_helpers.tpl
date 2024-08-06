@@ -46,8 +46,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "nautobot.selectorLabels" -}}
-nb.kubernetes.io/name: {{ include "nautobot.name" . }}
-nb.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/name: {{ include "nautobot.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*

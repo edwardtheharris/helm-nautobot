@@ -294,10 +294,12 @@ spec:
       volumes:
         - name: celery-config
           configMap:
-            name: nautobot-config
+            name: celery-config
             items:
               - key: nautobot_config.py
-                path: 'nautobot_config.py'
+                path: nautobot_config.py
+              - key: .bashrc
+                path: .bahsrc
         - name: {{ .Values.config.name }}
           configMap:
             name: nautobot-config
