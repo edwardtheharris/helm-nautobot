@@ -100,17 +100,17 @@ spec:
                 secretKeyRef:
                   name: secret.github.sso
                   key: social_auth_github_secret
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5672
               name: celery-beat
           volumeMounts:
-            - name: nautobot-config
-              mountPath: /opt/celery/
             - name: celery-beat
               mountPath: /opt/celery
               subPath: celery
+            - name: {{ .Values.config.celery.name }}
+              mountPath: /opt/celery/
         - name: celery-worker
           command:
             - tail
@@ -130,7 +130,7 @@ spec:
             - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
               value: 'True'
             - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
-              value: 'default-celery'
+              value: 'default'
             - name: NAUTOBOT_DEBUG
               value: 'True'
             - name: NAUTOBOT_DB_ENGINE
@@ -188,17 +188,17 @@ spec:
                 secretKeyRef:
                   name: secret.github.sso
                   key: social_auth_github_secret
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5673
               name: celery
           volumeMounts:
-            - name: celery-config
-              mountPath: /opt/celery/
             - name: celery-worker
               mountPath: /opt/celery
               subPath: celery
+            - name: celery-config
+              mountPath: /opt/celery/
         - name: nautobot
           # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
@@ -283,7 +283,7 @@ spec:
                   name: secret.github.sso
                   key: social_auth_github_secret
           volumeMounts:
-            - name: nautobot-config
+            - name: {{ .Values.config.name }}
               mountPath: /opt/nautobot/
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot
@@ -292,9 +292,9 @@ spec:
       securityContext:
         fsGroup: 1000
       volumes:
-        - name: celery-config
+        - name: {{ .Values.config.celery.name }}
           configMap:
-            name: celery-config
+            name: {{ .Values.config.celery.name }}
             items:
               - key: nautobot_config.py
                 path: nautobot_config.py

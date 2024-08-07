@@ -396,7 +396,7 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 # use the `target_limit` parameter to the Prometheus `scrape_config` to ensure
 # you are not getting duplicate metrics in
 # that case. Set this to an empty string to disable it.
-# CELERY_WORKER_PROMETaHEUS_PORTS = []
+CELERY_WORKER_PROMETHEUS_PORTS = []
 # if os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS"):
 #     CELERY_WORKER_PROMETHEUS_PORTS = [
 #         int(value) for value in os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS").split(",")

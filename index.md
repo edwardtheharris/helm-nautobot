@@ -18,6 +18,7 @@ title: Nautobot Helm Chart
 :caption: meta
 
 .github/index
+container/index
 license
 readme
 security

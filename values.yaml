@@ -21,6 +21,9 @@ config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache
   celery:
+    image:
+      repository: ghcr.io/edwardtheharris/helm-nautobot/celery
+      tag: '0.0.1.rc28'
     broker: 'redis://redis.redis.svc.cluster.local:6379/0'
     name: celery-config
     results: 'redis://redis.redis.svc.cluster.local:6379/0'
@@ -41,7 +44,7 @@ image:
   pullPolicy: Always
   repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: '0.0.1.rc26'
+  tag: '0.0.1.rc27'
   secret:
     name: ghcr
     data: ''
@@ -131,7 +134,8 @@ service:
   targetPort: 8000
   type: ClusterIP
   selectorLabels:
-    service.kubernetes.io/name: nautobot
+    app.kubernetes.io/component: network
+    app.kubernetes.io/name: nautobot
 serviceAccount:
   # Annotations to add to the service account
   annotations:
