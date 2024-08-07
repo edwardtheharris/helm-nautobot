@@ -70,7 +70,7 @@ logger.debug(STORAGE_CONFIG)
 
 AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = [
-    # 'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     # 'django.contrib.auth.backends.ModelBackend',
     'nautobot.core.authentication.ObjectPermissionBackend',
 ]
@@ -336,27 +336,27 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 # top right of the nav bar.
 # The filepath should be relative to the `MEDIA_ROOT`.
 #
-# BRANDING_FILEPATHS = {
-#     "logo": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_LOGO", None),  # Navbar logo
-#     "favicon": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_FAVICON", None),  # Browser favicon
-#     "icon_16": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_16", None),  # 16x16px icon
-#     "icon_32": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_32", None),  # 32x32px icon
-#     "icon_180": os.getenv(
-#         "NAUTOBOT_BRANDING_FILEPATHS_ICON_180", None
-#     ),  # 180x180px icon - used for the apple-touch-icon header
-#     "icon_192": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_192", None),  # 192x192px icon
-#     "icon_mask": os.getenv(
-#         "NAUTOBOT_BRANDING_FILEPATHS_ICON_MASK", None
-#     ),  # mono-chrome icon used for the mask-icon header
-#     "header_bullet": os.getenv(
-#         "NAUTOBOT_BRANDING_FILEPATHS_HEADER_BULLET", None
-#     ),  # bullet image used for various view headers
-#     "nav_bullet": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_NAV_BULLET", None),
-# # bullet image used for nav menu headers
-#     "css": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_CSS", None),  # Custom global CSS
-#     "javascript": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_JAVASCRIPT", None),
-# # Custom global JavaScript
-# }
+BRANDING_FILEPATHS = {
+    "logo": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_LOGO", None),  # Navbar logo
+    "favicon": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_FAVICON", None),  # Browser favicon
+    "icon_16": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_16", None),  # 16x16px icon
+    "icon_32": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_32", None),  # 32x32px icon
+    "icon_180": os.getenv(
+        "NAUTOBOT_BRANDING_FILEPATHS_ICON_180", None
+    ),  # 180x180px icon - used for the apple-touch-icon header
+    "icon_192": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_192", None),  # 192x192px icon
+    "icon_mask": os.getenv(
+        "NAUTOBOT_BRANDING_FILEPATHS_ICON_MASK", None
+    ),  # mono-chrome icon used for the mask-icon header
+    "header_bullet": os.getenv(
+        "NAUTOBOT_BRANDING_FILEPATHS_HEADER_BULLET", None
+    ),  # bullet image used for various view headers
+    "nav_bullet": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_NAV_BULLET", None),
+# bullet image used for nav menu headers
+    "css": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_CSS", None),  # Custom global CSS
+    "javascript": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_JAVASCRIPT", None),
+# Custom global JavaScript
+}
 
 # Prepended to CSV, YAML and export template filenames (i.e. `nautobot_device.yml`)
 #

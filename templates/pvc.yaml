@@ -25,3 +25,53 @@ spec:
   storageClassName: csi-driver-lvm-striped
   volumeMode: Filesystem
 {{ end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    name: {{ .Release.Name }}
+    volume.kubernetes.io/name: celery-beat-pvc
+    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/component: filesystem
+    pvc.kubernetes.io/instance: {{ .Release.Name }}
+    pvc.kubernetes.io/name: celery-beat-pvc
+  name: celery-beat-pvc
+  namespace: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: csi-driver-lvm-linear
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    name: {{ .Release.Name }}
+    volume.kubernetes.io/name: celery-worker-pvc
+    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/component: filesystem
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: celery-worker-pvc
+  name: celery-worker-pvc
+  namespace: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: csi-driver-lvm-linear
+  volumeMode: Filesystem

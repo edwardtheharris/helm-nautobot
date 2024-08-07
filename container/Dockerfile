@@ -3,8 +3,8 @@ ARG USER=nautobot
 LABEL io.ghcr.edwardtheharris.helm-nautobot.editor="Xander Harris"
 LABEL io.ghcr.edwardtheharris.helm-nautobot.name="${USER}"
 LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-nautobot"
-LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc29"
-COPY container/entrypoint.sh /bin/entrypoint.sh
+LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc30"
+COPY container/${USER}.entrypoint.sh /bin/entrypoint.sh
 COPY container/reqs /opt/${USER}/reqs
 RUN apk add --no-cache \
     alpine-sdk \
@@ -17,6 +17,7 @@ RUN apk add --no-cache \
     pkgconfig \
     python3-dev \
     shadow \
+    sudo \
     vim \
     xmlsec-dev \
     zlib-dev \
