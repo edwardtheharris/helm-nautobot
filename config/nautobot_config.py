@@ -66,7 +66,7 @@ logger.debug(STATIC_ROOT)
 logger.debug(STORAGE_BACKEND)
 logger.debug(STORAGE_CONFIG)
 
-# AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = [
     # 'social_core.backends.github.GithubOAuth2',
     # 'django.contrib.auth.backends.ModelBackend',
