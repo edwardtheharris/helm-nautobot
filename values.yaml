@@ -44,7 +44,7 @@ image:
   pullPolicy: Always
   repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: '0.0.1.rc27'
+  tag: '0.0.1.rc29'
   secret:
     name: ghcr
     data: ''
