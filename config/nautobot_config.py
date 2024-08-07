@@ -258,7 +258,7 @@ MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 #
 SESSION_EXPIRE_AT_BROWSER_CLOSE = is_truthy(
     os.getenv("NAUTOBOT_SESSION_EXPIRE_AT_BROWSER_CLOSE", "False"))
-1
+
 # The length of time (in seconds) for which a user will remain logged into
 # the web UI before being prompted to
 # re-authenticate. (Default: 1209600 [14 days])
