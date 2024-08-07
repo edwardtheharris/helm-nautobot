@@ -30,6 +30,7 @@ from nautobot.core.settings import STATIC_URL
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
 from nautobot.core.settings import TEMPLATES
+from nautobot.core.settings import VERSION
 from nautobot.core.settings_funcs import is_truthy
 from nautobot.core.settings_funcs import parse_redis_connection
 
@@ -46,6 +47,7 @@ logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
 logger.debug(f'installed apps: {INSTALLED_APPS}')
 # logger.debug(f'rq queues: {RQ_QUEUES}')
 logger.debug(f'secret key: {SECRET_KEY}')
+logger.debug(f'version {VERSION}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
 # server. Nautobot will not permit write
 # access to the server via any other hostnames. The first FQDN in the list will
