@@ -72,7 +72,7 @@ AUTHENTICATION_BACKENDS = [
     # 'django.contrib.auth.backends.ModelBackend',
     'nautobot.core.authentication.ObjectPermissionBackend',
 ]
-# logger.debug(f'{AUTHENTICATION_BACKENDS}')
+logger.debug(f'authentication backends: {AUTHENTICATION_BACKENDS}')
 
 # The django-redis cache is used to establish concurrent locks using Redis.
 #
@@ -283,7 +283,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 #
 STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 STATIC_URL = 'static/'
-# logger.debug(STATIC_URL)
+logger.debug(f'static url {STATIC_URL}')
 
 # Time zone (default: UTC)
 #
