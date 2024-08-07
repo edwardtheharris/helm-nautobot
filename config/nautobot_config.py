@@ -663,10 +663,10 @@ SANITIZER_PATTERNS = [
 
 # Configure SSO, for more information see docs/configuration/authentication/sso.md
 #
-# SOCIAL_AUTH_JSONFIELD_ENABLED = True
-# SOCIAL_AUTH_BACKEND_PREFIX = 'social_core.backends'
-# SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
-# SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+SOCIAL_AUTH_BACKEND_PREFIX = 'social_core.backends'
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', '')
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 
 # By default uploaded media is stored on the local filesystem. Using
 # Django-storages is also supported. Provide the
