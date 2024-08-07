@@ -23,7 +23,7 @@ config:
   celery:
     image:
       repository: ghcr.io/edwardtheharris/helm-nautobot/celery
-      tag: '0.0.1.rc28'
+      tag: '0.0.1.rc29'
     broker: 'redis://redis.redis.svc.cluster.local:6379/0'
     name: celery-config
     results: 'redis://redis.redis.svc.cluster.local:6379/0'

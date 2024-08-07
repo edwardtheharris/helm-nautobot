@@ -12,6 +12,9 @@ data:
   uwsgi.ini: |-
     {{- $.Files.Get "config/uwsgi.ini" | nindent 4 }}
 
+  reqs: |-
+    {{- $.Files.Get "config/reqs" | nindent 4 }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -23,3 +26,6 @@ data:
 
   .bashrc: |-
     {{- $.Files.Get "config/celery.bashrc" | nindent 4 }}
+
+  reqs: |-
+    {{- $.Files.Get "config/reqs" | nindent 4 }}
