@@ -110,7 +110,8 @@ spec:
               name: celery-beat
           volumeMounts:
             - name: celery-beat
-              mountPath: /opt/celery/
+              mountPath: /opt/celery
+              subPath: .
             - name: {{ .Values.config.celery.name }}
               mountPath: /opt/celery/.celery
         - name: celery-worker
@@ -197,7 +198,8 @@ spec:
               name: celery
           volumeMounts:
             - name: celery-worker
-              mountPath: /opt/celery/
+              mountPath: /opt/celery
+              subPath: .
             - name: celery-config
               mountPath: /opt/celery/.celery
         - name: nautobot
@@ -284,9 +286,10 @@ spec:
                   name: secret.github.sso
                   key: social_auth_github_secret
           volumeMounts:
-            - name: {{ .Values.config.name }}
-              mountPath: /opt/nautobot/
             - name: {{ .Values.persistence.name }}
+              mountPath: /opt/nautobot
+              subPath: .
+            - name: {{ .Values.config.name }}
               mountPath: /opt/nautobot/.nautobot
       imagePullSecrets:
         - name: secret.github.ghcr
@@ -307,6 +310,10 @@ spec:
             items:
               - key: nautobot_config.py
                 path: 'nautobot_config.py'
+              - key: .bashrc
+                path: .bashrc
+              - key: uwsgi.ini
+                path: uwsgi.ini
   volumeClaimTemplates:
     - metadata:
         name: celery-beat

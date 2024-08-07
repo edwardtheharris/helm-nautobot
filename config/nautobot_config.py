@@ -6,7 +6,7 @@ import tempfile
 from loguru import logger
 
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
-# from nautobot.core.settings import AUTHENTICATION_BACKENDS
+from nautobot.core.settings import AUTHENTICATION_BACKENDS
 from nautobot.core.settings import CACHES
 # from nautobot.core.settings import CACHEOPS_DEFAULTS
 # from nautobot.core.settings import CACHEOPS_ENABLED
@@ -26,7 +26,7 @@ from nautobot.core.settings import ROOT_URLCONF
 from nautobot.core.settings import SANITIZER_PATTERNS
 from nautobot.core.settings import SECRET_KEY
 from nautobot.core.settings import STATIC_ROOT
-# from nautobot.core.settings import STATIC_URL
+from nautobot.core.settings import STATIC_URL
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
 from nautobot.core.settings import TEMPLATES
@@ -67,11 +67,11 @@ logger.debug(STORAGE_BACKEND)
 logger.debug(STORAGE_CONFIG)
 
 # AUTH_USER_MODEL = "users.User"
-# AUTHENTICATION_BACKENDS = [
-#     # 'social_core.backends.github.GithubOAuth2',
-#     # 'django.contrib.auth.backends.ModelBackend',
-#     'nautobot.core.authentication.ObjectPermissionBackend',
-# ]
+AUTHENTICATION_BACKENDS = [
+    # 'social_core.backends.github.GithubOAuth2',
+    # 'django.contrib.auth.backends.ModelBackend',
+    'nautobot.core.authentication.ObjectPermissionBackend',
+]
 # logger.debug(f'{AUTHENTICATION_BACKENDS}')
 
 # The django-redis cache is used to establish concurrent locks using Redis.
@@ -258,7 +258,7 @@ MEDIA_ROOT = os.path.join(NAUTOBOT_ROOT, "media").rstrip("/")
 #
 SESSION_EXPIRE_AT_BROWSER_CLOSE = is_truthy(
     os.getenv("NAUTOBOT_SESSION_EXPIRE_AT_BROWSER_CLOSE", "False"))
-
+1
 # The length of time (in seconds) for which a user will remain logged into
 # the web UI before being prompted to
 # re-authenticate. (Default: 1209600 [14 days])
@@ -281,8 +281,8 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # Where static files (CSS, JavaScript, etc.) are stored
 #
-# STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
-# STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
+STATIC_URL = 'static/'
 # logger.debug(STATIC_URL)
 
 # Time zone (default: UTC)
