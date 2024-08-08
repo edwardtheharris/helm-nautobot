@@ -23,8 +23,6 @@ spec:
         app.kubernetes.io/name: {{ include "nautobot.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      securityContext:
-        allowPrivilegeEscalation: true
       containers:
         - name: celery-beat
           command:
@@ -207,6 +205,7 @@ spec:
       imagePullSecrets:
         - name: secret.github.ghcr
       securityContext:
+        allowPrivilegeEscalation: true
         runAsUser: 1000
         fsGroup: 1000
       volumes:
