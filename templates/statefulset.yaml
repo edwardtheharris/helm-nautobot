@@ -43,7 +43,7 @@ spec:
           command:
             - /bin/bash
             - '-c'
-          args: 'cat /opt/celery/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          args: 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
