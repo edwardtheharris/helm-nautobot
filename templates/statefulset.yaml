@@ -23,17 +23,13 @@ spec:
         app.kubernetes.io/name: {{ include "nautobot.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      # initContainers:
-      containers:
+      initContainers:
         - name: nautobot-init
           command:
-            - tail
-            - '-f'
-            - '/dev/null'
-            # - /bin/bash
-            # - '-c'
-          # args:
-            # - 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+            - /bin/bash
+            - '-c'
+          args:
+            - 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
           volumeMounts:
@@ -42,12 +38,12 @@ spec:
               subPath: nautobot
             - name: nautobot-config
               mountPath: /opt/nautobot/.nautobot
+      containers:
         - name: nautobot
-          # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
-            - tail
-            - '-f'
-            - /dev/null
+            - /bin/bash
+            - '-c'
+          args: 'cat /opt/celery/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
