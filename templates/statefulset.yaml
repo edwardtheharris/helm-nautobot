@@ -23,21 +23,25 @@ spec:
         app.kubernetes.io/name: {{ include "nautobot.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      initContainers:
+      # initContainers:
+      containers:
         - name: nautobot-init
           command:
-            - /bin/bash
-            - '-c'
-          args:
-            - 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
-          image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
+            - tail
+            - '-f'
+            - '/dev/null'
+            # - /bin/bash
+            # - '-c'
+          # args:
+            # - 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
           volumeMounts:
             - name: {{ .Values.persistence.name }}
               mountPath: /opt/nautobot
               subPath: nautobot
             - name: nautobot-config
               mountPath: /opt/nautobot/.nautobot
-      containers:
         - name: nautobot
           # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
@@ -131,7 +135,6 @@ spec:
         - name: secret.github.ghcr
       securityContext:
         allowPrivilegeEscalation: true
-        runAsUser: 1000
         fsGroup: 1000
       volumes:
         - name: {{ .Values.config.name }}
