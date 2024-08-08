@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
 ###
 # ```{rubric} Deployment Test Suite
 # ```
@@ -13,11 +14,27 @@ templates:
 values:
   - ../values.yaml
 tests:
-  - asserts:
+  - it: should deploy a nautobot Deployment
+    asserts:
       - isKind:
           of: Deployment
       - equal:
           path: metadata.name
           value: nautobot
-    it: should be a Deployment
+    documentIndex: 0
+  - it: should deploy a celery-worker Deployment
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: celery-worker
     documentIndex: 1
+  - it: should deploy a celery-beat Deployment
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: celery-beat
+    documentIndex: 2
