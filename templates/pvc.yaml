@@ -63,8 +63,8 @@ metadata:
     - kubernetes.io/pvc-protection
   labels:
     app.kubernetes.io/component: filesystem
-    pvc.kubernetes.io/instance: {{ .Release.Name }}
-    pvc.kubernetes.io/name: celery-beat-pvc
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: celery-beat-pvc
   name: celery-beat-pvc
   namespace: {{ .Release.Name }}
 spec:
@@ -89,7 +89,7 @@ metadata:
   labels:
     app.kubernetes.io/component: filesystem
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: celery-worker-pvc
+    app.kubernetes.io/name: celery-worker
   name: celery-worker-pvc
   namespace: {{ .Release.Name }}
 spec:
