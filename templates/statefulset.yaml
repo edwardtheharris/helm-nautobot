@@ -231,17 +231,6 @@ spec:
     #         storage: 10Gi
     #     storageClassName: {{ .Values.persistence.storageClass }}
     #     volumeMode: Filesystem
-    # - metadata:
-    #     name: celery-worker
-    #   spec:
-    #     accessModes:
-    #       - ReadWriteMany
-    #       - ReadWriteOnce
-    #     resources:
-    #       requests:
-    #         storage: 10Gi
-    #     storageClassName: {{ .Values.persistence.storageClass }}
-    #     volumeMode: Filesystem
     - metadata:
         name: {{ .Values.persistence.name }}
       spec:
