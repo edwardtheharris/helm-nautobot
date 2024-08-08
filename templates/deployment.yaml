@@ -113,8 +113,10 @@ spec:
       containers:
         - name: celery-worker
           command:
-            - sleep
-            - "860000"
+            - /bin/bash
+            - '-c'
+          args:
+            - '/opt/celery/bin/nautobot-server --config /opt/celery/.celery/nautobot_config.py celery worker --loglevel DEBUG'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
