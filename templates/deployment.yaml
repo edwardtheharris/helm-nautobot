@@ -1,29 +1,5 @@
 {{- if eq .Values.type "Deployment" }}
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    name: {{ .Release.Name }}
-    volume.kubernetes.io/name: {{ .Release.Name }}
-    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
-  finalizers:
-    - kubernetes.io/pvc-protection
-  labels:
-    app.kubernetes.io/component: primary
-    pvc.kubernetes.io/instance: {{ .Release.Name }}
-    pvc.kubernetes.io/name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-opt
-  namespace: {{ .Release.Name }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: csi-driver-lvm-linear
-  volumeMode: Filesystem
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -200,8 +176,6 @@ spec:
               subPath: celery
             - name: celery-config
               mountPath: /opt/celery/.celery
-      securityContext:
-        fsGroup: 1000
       volumes:
         - name: {{ .Values.config.celery.name }}
           configMap:
@@ -218,3 +192,145 @@ spec:
         - name: celery-worker-pvc
           persistentVolumeClaim:
             claimName: celery-worker-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-beat
+  labels:
+    deployment.kubernetes.io/name: celery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: celery-beat
+  template:
+    metadata:
+      annotations:
+        app.kubernetes.io/name: celery-beat
+      labels:
+        app.kubernetes.io/name: celery-beat
+      name: celery-beat
+    spec:
+      imagePullSecrets:
+        - name: secret.github.ghcr
+      initContainers:
+        - name: celery-beat-init
+          command:
+            - /bin/bash
+            - '-c'
+          args:
+            - 'cat /opt/celery/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
+          volumeMounts:
+            - name: celery-beat-pvc
+              mountPath: /opt/celery
+              subPath: celery
+            - name: celery-config
+              mountPath: /opt/celery/.celery
+      containers:
+        - name: celery-beat
+          command:
+            - /bin/bash
+            - '-c'
+          args:
+            - '/opt/celery/bin/nautobot-server --config /opt/celery/.celery/nautobot_config.py celery beat --loglevel DEBUG'
+          env:
+            - name: NAUTOBOT_ALLOWED_HOSTS
+              value: {{ .Values.config.allowed_hosts | quote }}
+            - name: NAUTOBOT_CELERY_BROKER_URL
+              value: {{ .Values.config.celery.broker }}
+            - name: NAUTOBOT_CELERY_RESULT_BACKEND
+              value: {{ .Values.config.celery.results }}
+            - name: NAUTOBOT_CACHES_BACKEND
+              value: {{ .Values.config.caches_backend }}
+            - name: NAUTOBOT_CREATE_SUPERUSER
+              value: {{ .Values.superUser.create | quote }}
+            - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
+              value: 'True'
+            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
+              value: 'default'
+            - name: NAUTOBOT_DEBUG
+              value: 'True'
+            - name: NAUTOBOT_DB_ENGINE
+              value: {{ .Values.database.engine }}
+            - name: NAUTOBOT_DB_HOST
+              value: postgresql.postgresql.svc.cluster.local
+            - name: NAUTOBOT_DB_NAME
+              value: {{ .Values.database.database }}
+            - name: NAUTOBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: password
+            - name: NAUTOBOT_DB_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: NAUTOBOT_DB_TIMEOUT
+              value: {{ .Values.database.timeout | quote }}
+            - name: NAUTOBOT_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: username
+            - name: NAUTOBOT_ROOT
+              value: {{ .Values.config.celery.root }}
+            - name: NAUTOBOT_REDIS_HOST
+              value: redis.redis.svc.cluster.local
+            - name: NAUTOBOT_REDIS_SCHEME
+              value: redis
+            - name: NAUTOBOT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secret.superuser
+                  key: secretKey
+            - name: NAUTOBOT_SUPERUSER_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.superUser.secret.name }}
+                  key: token
+            - name: NAUTOBOT_SUPERUSER_EMAIL
+              value: {{ .Values.superUser.email }}
+            - name: NAUTOBOT_SUPERUSER_NAME
+              value: {{ .Values.superUser.name }}
+            - name: NAUTOBOT_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.superUser.secret.name }}
+                  key: password
+            - name: SOCIAL_AUTH_GITHUB_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secret.github.sso
+                  key: social_auth_github_key
+            - name: SOCIAL_AUTH_GITUB_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secret.github.sso
+                  key: social_auth_github_secret
+          image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5672
+              name: celery-beat
+          volumeMounts:
+            - name: celery-beat-pvc
+              mountPath: /opt/celery
+              subPath: celery
+            - name: celery-config
+              mountPath: /opt/celery/.celery
+      volumes:
+        - name: {{ .Values.config.celery.name }}
+          configMap:
+            name: {{ .Values.config.celery.name }}
+            items:
+              - key: nautobot_config.py
+                path: nautobot_config.py
+              - key: .bashrc
+                path: .bashrc
+              - key: reqs
+                path: 'reqs'
+              - key: init.sh
+                path: init.sh
+        - name: celery-beat-pvc
+          persistentVolumeClaim:
+            claimName: celery-beat-pvc

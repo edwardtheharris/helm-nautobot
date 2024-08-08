@@ -1,3 +1,29 @@
+{{- if eq .Values.type "Deployment" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    name: {{ .Release.Name }}
+    volume.kubernetes.io/name: {{ .Release.Name }}
+    volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app.kubernetes.io/component: primary
+    pvc.kubernetes.io/instance: {{ .Release.Name }}
+    pvc.kubernetes.io/name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-opt
+  namespace: {{ .Release.Name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: csi-driver-lvm-linear
+  volumeMode: Filesystem
+{{ end }}
 {{ if .Values.persistence.claim.enabled }}
 ---
 apiVersion: v1
