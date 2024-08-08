@@ -7,6 +7,7 @@ from loguru import logger
 
 from nautobot.core.settings import ALLOWED_URL_SCHEMES
 from nautobot.core.settings import AUTHENTICATION_BACKENDS
+from nautobot.core.settings import BASE_DIR
 from nautobot.core.settings import CACHES
 # from nautobot.core.settings import CACHEOPS_DEFAULTS
 # from nautobot.core.settings import CACHEOPS_ENABLED
@@ -16,19 +17,21 @@ from nautobot.core.settings import CELERY_TASK_DEFAULT_QUEUE
 from nautobot.core.settings import DATABASES
 from nautobot.core.settings import INSTALLED_APPS
 from nautobot.core.settings import JOBS_ROOT
+from nautobot.core.settings import LOGIN_URL
+from nautobot.core.settings import LOGIN_REDIRECT_URL
 from nautobot.core.settings import MAINTENANCE_MODE
 from nautobot.core.settings import METRICS_ENABLED
 from nautobot.core.settings import MIDDLEWARE
 from nautobot.core.settings import NAUTOBOT_ROOT
 from nautobot.core.settings import PLUGINS
 from nautobot.core.settings import ROOT_URLCONF
-# from nautobot.core.settings import RQ_QUEUES
 from nautobot.core.settings import SANITIZER_PATTERNS
 from nautobot.core.settings import SECRET_KEY
 from nautobot.core.settings import STATIC_ROOT
 from nautobot.core.settings import STATIC_URL
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
+from nautobot.core.settings import TIME_ZONE
 from nautobot.core.settings import TEMPLATES
 from nautobot.core.settings import VERSION
 from nautobot.core.settings_funcs import is_truthy
@@ -40,6 +43,11 @@ from nautobot.core.settings_funcs import parse_redis_connection
 #                       #
 #########################
 
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+logger.debug(f'base dir {BASE_DIR}')
+logger.debug(f'login url {LOGIN_URL}')
+logger.debug(f'login redirect url {LOGIN_REDIRECT_URL}')
 logger.debug(f'cache ops defaults: {MIDDLEWARE}')
 # logger.debug(f'cache ops defaults: {CACHEOPS_DEFAULTS}')
 # logger.debug(f'cache ops enabled: {CACHEOPS_ENABLED}')
@@ -47,6 +55,7 @@ logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
 logger.debug(f'installed apps: {INSTALLED_APPS}')
 # logger.debug(f'rq queues: {RQ_QUEUES}')
 logger.debug(f'secret key: {SECRET_KEY}')
+logger.debug(f'time zone: {TIME_ZONE}')
 logger.debug(f'version {VERSION}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
 # server. Nautobot will not permit write
@@ -57,7 +66,7 @@ logger.debug(f'version {VERSION}')
 #
 ALLOWED_HOSTS = os.getenv("NAUTOBOT_ALLOWED_HOSTS", "").split(" ")
 
-
+BASE_DIR = '/opt/nautobot'
 # logger.debug(AUTHENTICATION_BACKENDS)
 logger.debug(JOBS_ROOT)
 logger.debug(MAINTENANCE_MODE)
@@ -182,10 +191,15 @@ TIME_FORMAT = os.getenv("NAUTOBOT_TIME_FORMAT", "g:i a")
 DATETIME_FORMAT = os.getenv("NAUTOBOT_DATETIME_FORMAT", "N j, Y g:i a")
 SHORT_DATETIME_FORMAT = os.getenv("NAUTOBOT_SHORT_DATETIME_FORMAT", "Y-m-d H:i")
 
+TEMPLATES[0].get('OPTIONS').get('context_processors').append(
+    'social_django.context_processors.backends')
+TEMPLATES[0].get('OPTIONS').get('context_processors').append(
+    'social_django.context_processors.login_redirect')
 logger.debug(f'templates: {TEMPLATES}')
-# MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
-# MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
-# MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
+MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
+MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
+MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
+logger.debug(f'middleware: {MIDDLEWARE}')
 
 
 # Set to True to enable server debugging. WARNING: Debugging introduces a
@@ -327,11 +341,11 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 #
 # if "NAUTOBOT_BANNER_BOTTOM" in os.environ and os.environ["NAUTOBOT_BANNER_BOTTOM"] != "":
 #     BANNER_BOTTOM = os.environ["NAUTOBOT_BANNER_BOTTOM"]
-# if "NAUTOBOT_BANNER_LOGIN" in os.environ and os.environ["NAUTOBOT_BANNER_LOGIN"] != "":
-#     BANNER_LOGIN = os.environ["NAUTOBOT_BANNER_LOGIN"]
+if "NAUTOBOT_BANNER_LOGIN" in os.environ and os.environ["NAUTOBOT_BANNER_LOGIN"] != "":
+    BANNER_LOGIN = os.environ["NAUTOBOT_BANNER_LOGIN"]
 # if "NAUTOBOT_BANNER_TOP" in os.environ and os.environ["NAUTOBOT_BANNER_TOP"] != "":
 #     BANNER_TOP = os.environ["NAUTOBOT_BANNER_TOP"]
-
+# BANNER_LOGIN = ""
 # Branding logo locations. The logo takes the place of the Nautobot logo in the
 # top right of the nav bar.
 # The filepath should be relative to the `MEDIA_ROOT`.
@@ -364,22 +378,22 @@ BRANDING_FILEPATHS = {
 
 # Title to use in place of "Nautobot"
 #
-# BRANDING_TITLE = os.getenv("NAUTOBOT_BRANDING_TITLE", "Nautobot")
+BRANDING_TITLE = os.getenv("NAUTOBOT_BRANDING_TITLE", "Nautobot")
 
 # Branding URLs (links in the bottom right of the footer)
 #
-# BRANDING_URLS = {
-#     "code": os.getenv("NAUTOBOT_BRANDING_URLS_CODE", "https://github.com/nautobot/nautobot"),
-#     "docs": os.getenv("NAUTOBOT_BRANDING_URLS_DOCS", None),
-#     "help": os.getenv("NAUTOBOT_BRANDING_URLS_HELP", "https://github.com/nautobot/nautobot/wiki"),
-# }
+BRANDING_URLS = {
+    "code": os.getenv("NAUTOBOT_BRANDING_URLS_CODE", "https://github.com/nautobot/nautobot"),
+    "docs": os.getenv("NAUTOBOT_BRANDING_URLS_DOCS", None),
+    "help": os.getenv("NAUTOBOT_BRANDING_URLS_HELP", "https://github.com/nautobot/nautobot/wiki"),
+}
 
 # Options to pass to the Celery broker transport, for example when using Celery with Redis Sentinel.
 #
 # CELERY_BROKER_TRANSPORT_OPTIONS = {}
 
 # Default celery queue name that will be used by workers and tasks if no queue is specified
-# CELERY_TASK_DEFAULT_QUEUE = os.getenv("NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE", "default")
+CELERY_TASK_DEFAULT_QUEUE = os.getenv("NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE", "default")
 
 # Global task time limits (seconds)
 # Exceeding the soft limit will result in a SoftTimeLimitExceeded exception,
@@ -445,7 +459,7 @@ CORS_ALLOW_ALL_ORIGINS = is_truthy(os.getenv("NAUTOBOT_CORS_ALLOW_ALL_ORIGINS", 
 #       os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"] != "":
 #     DEVICE_NAME_AS_NATURAL_KEY = is_truthy(os.environ["NAUTOBOT_DEVICE_NAME_AS_NATURAL_KEY"])
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # The number of seconds to cache the member list of dynamic groups.
 # Set this to `0` to disable caching.
@@ -471,7 +485,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # Global 3rd-party authentication settings
 #
 # EXTERNAL_AUTH_DEFAULT_GROUPS = []
-# EXTERNAL_AUTH_DEFAULT_PERMISSIONS = {}
+EXTERNAL_AUTH_DEFAULT_PERMISSIONS = {
+    'dcim.add_device': {
+        'location__name__in':  ['HQ'], 'location__location_type__name__in': ['Building']},
+    'dcim.view_device': {
+        'location__name__in':  ['HQ'], 'location__location_type__name__in': ['Building']},
+    'dcim.view_devicetype': None,
+    'extras.view_role': None,
+    'extras.view_status': None,
+    'dcim.view_location': {'name__in':  ['HQ'], 'location_type__name__in': ['Building']},
+    'dcim.view_manufacturer': None,
+    'dcim.view_region': None,
+    'dcim.view_rack': None,
+    'dcim.view_rackgroup': None,
+    'dcim.view_platform': None,
+    'virtualization.view_cluster': None,
+    'virtualization.view_clustergroup': None,
+    'tenancy.view_tenant': None,
+    'tenancy.view_tenantgroup': None,
+}
 
 # Directory where cloned Git repositories will be stored.
 #
@@ -524,7 +556,7 @@ JOBS_ROOT = os.getenv("NAUTOBOT_JOBS_ROOT", os.path.join(NAUTOBOT_ROOT, "jobs").
 # Log Nautobot deprecation warnings. Note that this setting is ignored
 # (deprecation logs always enabled) if DEBUG = True
 #
-# LOG_DEPRECATION_WARNINGS = is_truthy(os.getenv("NAUTOBOT_LOG_DEPRECATION_WARNINGS", "False"))
+LOG_DEPRECATION_WARNINGS = is_truthy(os.getenv("NAUTOBOT_LOG_DEPRECATION_WARNINGS", "False"))
 
 # Setting this to True will display a "maintenance mode" banner at the top of every page.
 #
@@ -639,11 +671,11 @@ REDIS_LOCK_TIMEOUT = int(os.getenv("NAUTOBOT_REDIS_LOCK_TIMEOUT", "600"))
 
 # Remote auth backend settings
 #
-REMOTE_AUTH_AUTO_CREATE_USER = True
-REMOTE_AUTH_HEADER = "HTTP_REMOTE_USER"
+# REMOTE_AUTH_AUTO_CREATE_USER = True
+# REMOTE_AUTH_HEADER = "HTTP_REMOTE_USER"
 
-logger.debug(f'{REMOTE_AUTH_AUTO_CREATE_USER}')
-logger.debug(f'{REMOTE_AUTH_HEADER}')
+# logger.debug(f'{REMOTE_AUTH_AUTO_CREATE_USER}')
+# logger.debug(f'{REMOTE_AUTH_HEADER}')
 
 # Job log entry sanitization and similar
 #

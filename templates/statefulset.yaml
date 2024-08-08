@@ -25,11 +25,34 @@ spec:
     spec:
       initContainers:
         - name: nautobot-init
+          args:
+            - 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           command:
             - /bin/bash
             - '-c'
-          args:
-            - 'cat /opt/nautobot/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          env:
+            - name: NAUTOBOT_DB_ENGINE
+              value: {{ .Values.database.engine }}
+            - name: NAUTOBOT_DB_HOST
+              value: postgresql.postgresql.svc.cluster.local
+            - name: NAUTOBOT_DB_NAME
+              value: {{ .Values.database.database }}
+            - name: NAUTOBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: password
+            - name: NAUTOBOT_DB_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: NAUTOBOT_DB_TIMEOUT
+              value: {{ .Values.database.timeout | quote }}
+            - name: NAUTOBOT_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: username
+            - name: NAUTOBOT_ROOT
+              value: /opt/nautobot
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
           volumeMounts:
@@ -114,6 +137,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.superUser.secret.name }}
                   key: password
+            - name: NAUTOBOT_TIME_ZONE
+              value: 'America/Los_Angeles'
             - name: SOCIAL_AUTH_GITHUB_KEY
               valueFrom:
                 secretKeyRef:
@@ -133,7 +158,6 @@ spec:
       imagePullSecrets:
         - name: secret.github.ghcr
       securityContext:
-        allowPrivilegeEscalation: true
         fsGroup: 1000
       volumes:
         - name: {{ .Values.config.name }}
@@ -146,6 +170,8 @@ spec:
                 path: .bashrc
               - key: uwsgi.ini
                 path: uwsgi.ini
+              - key: reqs
+                path: reqs
               - key: init.sh
                 path: init.sh
   volumeClaimTemplates:
