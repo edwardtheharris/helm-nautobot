@@ -78,31 +78,43 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.nameOverride }}
+  name: celery-worker
   labels:
-    deployment.kubernetes.io/name: {{ .Values.nameOverride }}
+    deployment.kubernetes.io/name: celery-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: nautobot
+      app.kubernetes.io/name: celery-worker
   template:
     metadata:
       annotations:
-        app.kubernetes.io/name: nautobot
+        app.kubernetes.io/name: celery-worker
       labels:
-        app.kubernetes.io/name: nautobot
+        app.kubernetes.io/name: celery-worker
       name: celery-worker
     spec:
       imagePullSecrets:
         - name: secret.github.ghcr
+      initContainers:
+        - name: celery-worker-init
+          command:
+            - /bin/bash
+            - '-c'
+          args:
+            - 'cat /opt/celery/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
+          volumeMounts:
+            - name: celery-worker-pvc
+              mountPath: /opt/celery
+              subPath: celery
+            - name: celery-config
+              mountPath: /opt/celery/.celery
       containers:
         - name: celery-worker
           command:
-            - cd /opt/celery
-            - '&&'
-            - su
-            - celery
+            - sleep
+            - "860000"
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
@@ -183,7 +195,7 @@ spec:
           volumeMounts:
             - name: celery-worker-pvc
               mountPath: /opt/celery
-              subPath: .
+              subPath: celery
             - name: celery-config
               mountPath: /opt/celery/.celery
       securityContext:
@@ -199,6 +211,8 @@ spec:
                 path: .bashrc
               - key: reqs
                 path: 'reqs'
+              - key: init.sh
+                path: init.sh
         - name: celery-worker-pvc
           persistentVolumeClaim:
             claimName: celery-worker-pvc

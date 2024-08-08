@@ -20,6 +20,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.config.celery.name }}
+labels:
+    app.kubernetes.io/name: celery
+    app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   nautobot_config.py: |-
     {{- $.Files.Get "config/nautobot_config.py" | nindent 4 }}
@@ -29,3 +32,6 @@ data:
 
   reqs: |-
     {{- $.Files.Get "config/reqs" | nindent 4 }}
+
+  init.sh: |-
+    {{- $.Files.Get "config/celery.init.sh" | nindent 4 }}
