@@ -144,6 +144,8 @@ spec:
                 path: .bashrc
               - key: uwsgi.ini
                 path: uwsgi.ini
+              - key: init.sh
+                path: init.sh
   volumeClaimTemplates:
     - metadata:
         name: {{ .Values.persistence.name }}
