@@ -23,6 +23,9 @@ spec:
         app.kubernetes.io/name: {{ include "nautobot.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
       containers:
         - name: nautobot
           # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
@@ -115,10 +118,6 @@ spec:
               mountPath: /opt/nautobot/.nautobot
       imagePullSecrets:
         - name: secret.github.ghcr
-      securityContext:
-        allowPrivilegeEscalation: true
-        runAsUser: 1000
-        fsGroup: 1000
       volumes:
         - name: {{ .Values.config.name }}
           configMap:

@@ -15,12 +15,15 @@ data:
   reqs: |-
     {{- $.Files.Get "config/reqs" | nindent 4 }}
 
+  init.sh: |-
+    {{- $.Files.Get "config/nautobot.init.bashrc" | nindent 4 }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.config.celery.name }}
-labels:
+  labels:
     app.kubernetes.io/name: celery
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
