@@ -1,0 +1,6 @@
+gitpython
+loguru
+lxml
+nautobot[sso]
+wheel
+xmlsec

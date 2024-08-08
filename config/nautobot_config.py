@@ -30,6 +30,7 @@ from nautobot.core.settings import STATIC_URL
 from nautobot.core.settings import STORAGE_BACKEND
 from nautobot.core.settings import STORAGE_CONFIG
 from nautobot.core.settings import TEMPLATES
+from nautobot.core.settings import VERSION
 from nautobot.core.settings_funcs import is_truthy
 from nautobot.core.settings_funcs import parse_redis_connection
 
@@ -46,6 +47,7 @@ logger.debug(f'celery task default queue: {CELERY_TASK_DEFAULT_QUEUE}')
 logger.debug(f'installed apps: {INSTALLED_APPS}')
 # logger.debug(f'rq queues: {RQ_QUEUES}')
 logger.debug(f'secret key: {SECRET_KEY}')
+logger.debug(f'version {VERSION}')
 # This is a list of valid fully-qualified domain names (FQDNs) for the Nautobot
 # server. Nautobot will not permit write
 # access to the server via any other hostnames. The first FQDN in the list will
@@ -56,7 +58,7 @@ logger.debug(f'secret key: {SECRET_KEY}')
 ALLOWED_HOSTS = os.getenv("NAUTOBOT_ALLOWED_HOSTS", "").split(" ")
 
 
-logger.debug(AUTHENTICATION_BACKENDS)
+# logger.debug(AUTHENTICATION_BACKENDS)
 logger.debug(JOBS_ROOT)
 logger.debug(MAINTENANCE_MODE)
 logger.debug(METRICS_ENABLED)
@@ -69,10 +71,10 @@ logger.debug(STORAGE_CONFIG)
 AUTH_USER_MODEL = "users.User"
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.github.GithubOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
     'nautobot.core.authentication.ObjectPermissionBackend',
 ]
-logger.debug(f'{AUTHENTICATION_BACKENDS}')
+logger.debug(f'authentication backends: {AUTHENTICATION_BACKENDS}')
 
 # The django-redis cache is used to establish concurrent locks using Redis.
 #
@@ -181,9 +183,9 @@ DATETIME_FORMAT = os.getenv("NAUTOBOT_DATETIME_FORMAT", "N j, Y g:i a")
 SHORT_DATETIME_FORMAT = os.getenv("NAUTOBOT_SHORT_DATETIME_FORMAT", "Y-m-d H:i")
 
 logger.debug(f'templates: {TEMPLATES}')
-MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
-MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
-MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
+# MIDDLEWARE.append('django.contrib.sessions.middleware.SessionMiddleware')
+# MIDDLEWARE.append('django.contrib.auth.middleware.AuthenticationMiddleware')
+# MIDDLEWARE.append('django.contrib.messages.middleware.MessageMiddleware')
 
 
 # Set to True to enable server debugging. WARNING: Debugging introduces a
@@ -221,8 +223,8 @@ LOGGING = {
         },
         "verbose": {
             "format": (
-                "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s "
-                "%(filename)-15s %(funcName)30s() :\n  %(message)s"
+                '%(asctime)s.%(msecs)03d %(levelname)-7s %(name)-20s '
+                '%(filename)-15s %(funcName)30s() :\n  %(message)s'
             ),
             "datefmt": "%H:%M:%S",
         },
@@ -283,7 +285,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 #
 STATIC_ROOT = os.path.join(NAUTOBOT_ROOT, "static")
 STATIC_URL = 'static/'
-logger.debug(STATIC_URL)
+logger.debug(f'static url {STATIC_URL}')
 
 # Time zone (default: UTC)
 #
@@ -334,27 +336,27 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 # top right of the nav bar.
 # The filepath should be relative to the `MEDIA_ROOT`.
 #
-# BRANDING_FILEPATHS = {
-#     "logo": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_LOGO", None),  # Navbar logo
-#     "favicon": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_FAVICON", None),  # Browser favicon
-#     "icon_16": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_16", None),  # 16x16px icon
-#     "icon_32": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_32", None),  # 32x32px icon
-#     "icon_180": os.getenv(
-#         "NAUTOBOT_BRANDING_FILEPATHS_ICON_180", None
-#     ),  # 180x180px icon - used for the apple-touch-icon header
-#     "icon_192": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_192", None),  # 192x192px icon
-#     "icon_mask": os.getenv(
-#         "NAUTOBOT_BRANDING_FILEPATHS_ICON_MASK", None
-#     ),  # mono-chrome icon used for the mask-icon header
-#     "header_bullet": os.getenv(
-#         "NAUTOBOT_BRANDING_FILEPATHS_HEADER_BULLET", None
-#     ),  # bullet image used for various view headers
-#     "nav_bullet": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_NAV_BULLET", None),
-# # bullet image used for nav menu headers
-#     "css": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_CSS", None),  # Custom global CSS
-#     "javascript": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_JAVASCRIPT", None),
-# # Custom global JavaScript
-# }
+BRANDING_FILEPATHS = {
+    "logo": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_LOGO", None),  # Navbar logo
+    "favicon": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_FAVICON", None),  # Browser favicon
+    "icon_16": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_16", None),  # 16x16px icon
+    "icon_32": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_32", None),  # 32x32px icon
+    "icon_180": os.getenv(
+        "NAUTOBOT_BRANDING_FILEPATHS_ICON_180", None
+    ),  # 180x180px icon - used for the apple-touch-icon header
+    "icon_192": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_ICON_192", None),  # 192x192px icon
+    "icon_mask": os.getenv(
+        "NAUTOBOT_BRANDING_FILEPATHS_ICON_MASK", None
+    ),  # mono-chrome icon used for the mask-icon header
+    "header_bullet": os.getenv(
+        "NAUTOBOT_BRANDING_FILEPATHS_HEADER_BULLET", None
+    ),  # bullet image used for various view headers
+    "nav_bullet": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_NAV_BULLET", None),
+# bullet image used for nav menu headers
+    "css": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_CSS", None),  # Custom global CSS
+    "javascript": os.getenv("NAUTOBOT_BRANDING_FILEPATHS_JAVASCRIPT", None),
+# Custom global JavaScript
+}
 
 # Prepended to CSV, YAML and export template filenames (i.e. `nautobot_device.yml`)
 #
@@ -396,7 +398,7 @@ logger.debug(f'allowed url schemes: {ALLOWED_URL_SCHEMES}')
 # use the `target_limit` parameter to the Prometheus `scrape_config` to ensure
 # you are not getting duplicate metrics in
 # that case. Set this to an empty string to disable it.
-# CELERY_WORKER_PROMETHEUS_PORTS = []
+CELERY_WORKER_PROMETHEUS_PORTS = []
 # if os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS"):
 #     CELERY_WORKER_PROMETHEUS_PORTS = [
 #         int(value) for value in os.getenv("NAUTOBOT_CELERY_WORKER_PROMETHEUS_PORTS").split(",")
@@ -646,12 +648,18 @@ logger.debug(f'{REMOTE_AUTH_HEADER}')
 # Job log entry sanitization and similar
 #
 SANITIZER_PATTERNS = [
-#     # General removal of username-like and password-like tokens
-    (re.compile(r"(https?://)?\S+\s*@", re.IGNORECASE), r"\1{replacement}@"),
-    (re.compile(
-    r'(username|password|passwd|pwd|secret|secrets)([\"\']?(?:\s+is.?|:)?\s+)\S+["\']?',
-    re.IGNORECASE),
-        r"\1\2{replacement}",
+    # General removal of username-like and password-like tokens
+    (
+        re.compile(
+            r'(https?://)?\S+\s*@', re.IGNORECASE),
+            r'\1{replacement}@'
+        ),
+    (
+        re.compile(
+            r'(username|password|passwd|pwd|secret|secrets)([\"\']?(?:\s+is.?|:)?\s+)\S+["\']?',
+            re.IGNORECASE
+        ),
+        r'\1\2{replacement}',
     ),
 ]
 
@@ -713,4 +721,4 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', '')
 # )
 
 # Allow users to enable request profiling on their login session
-ALLOW_REQUEST_PROFILING = True
+ALLOW_REQUEST_PROFILING = False

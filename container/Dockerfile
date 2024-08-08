@@ -1,11 +1,11 @@
-FROM python:3.11-alpine AS nautobot
+FROM python:3.11-alpine AS build
+ARG USER=nautobot
 LABEL io.ghcr.edwardtheharris.helm-nautobot.editor="Xander Harris"
-LABEL io.ghcr.edwardtheharris.helm-nautobot.name="nautobot"
+LABEL io.ghcr.edwardtheharris.helm-nautobot.name="${USER}"
 LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-nautobot"
-LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc27"
-USER root
-COPY container/entrypoint.sh /bin/entrypoint.sh
-COPY container/Pipfile /opt/Pipfile
+LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc30"
+COPY container/${USER}.entrypoint.sh /bin/entrypoint.sh
+COPY container/reqs /opt/${USER}/reqs
 RUN apk add --no-cache \
     alpine-sdk \
     bash \
@@ -17,27 +17,11 @@ RUN apk add --no-cache \
     pkgconfig \
     python3-dev \
     shadow \
+    sudo \
     vim \
     xmlsec-dev \
     zlib-dev \
-    && groupadd nautobot \
-    && useradd -m -d /opt/nautobot -s /bin/bash -g nautobot nautobot \
     && chmod +x /bin/entrypoint.sh \
-    && python -m pip install --no-cache-dir -U --pre \
-    loguru \
-    --no-binary=lxml \
-    --no-binary=xmlsec \
-    nautobot[sso] \
-    pip \
-    pipenv \
-    wheel
-USER nautobot
-RUN python -m venv /opt/nautobot \
-    && /opt/nautobot/bin/pip install --no-cache-dir -U --pre \
-    loguru \
-    --no-binary=lxml \
-    --no-binary=xmlsec \
-    nautobot[sso] \
-    pip \
-    wheel
-CMD ["/bin/entrypoint.sh"]
+    && groupadd ${USER} \
+    && useradd -s /bin/bash -m -d /opt/${USER} -g ${USER} ${USER}
+CMD ["/bin/entrypoint.sh", "${USER}"]
