@@ -74,11 +74,14 @@ spec:
         - name: secret.github.ghcr
       initContainers:
         - name: celery-worker-init
+          args:
+            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           command:
             - /bin/bash
             - '-c'
-          args:
-            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          env:
+            - name: NAUTOBOT_ROOT
+              value: {{ .Values.config.celery.root }}
           image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
           volumeMounts:
             - name: celery-worker-pvc
@@ -174,17 +177,15 @@ spec:
               name: celery
           volumeMounts:
             - name: celery-worker-pvc
-              mountPath: /opt/celery
+              mountPath: /opt/
               subPath: celery
             - name: celery-config
-              mountPath: /opt/celery/.celery
+              mountPath: /opt/.celery
       volumes:
         - name: {{ .Values.config.celery.name }}
           configMap:
             name: {{ .Values.config.celery.name }}
             items:
-              - key: nautobot_config.py
-                path: nautobot_config.py
               - key: .bashrc
                 path: .bashrc
               - key: reqs
@@ -218,11 +219,18 @@ spec:
         - name: secret.github.ghcr
       initContainers:
         - name: celery-beat-init
+          args:
+            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           command:
             - /bin/bash
             - '-c'
-          args:
-            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+          env:
+            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
+              value: 'default'
+            - name: NAUTOBOT_DEBUG
+              value: 'True'
+            - name: NAUTOBOT_ROOT
+              value: {{ .Values.config.celery.root }}
           image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
           volumeMounts:
             - name: celery-beat-pvc
@@ -232,11 +240,11 @@ spec:
               mountPath: /opt/.celery
       containers:
         - name: celery-beat
+          args:
+            - '/opt/celery/bin/nautobot-server celery beat --loglevel DEBUG'
           command:
             - /bin/bash
             - '-c'
-          args:
-            - '/opt/celery/bin/nautobot-server celery beat --loglevel DEBUG'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
@@ -318,10 +326,10 @@ spec:
               name: celery-beat
           volumeMounts:
             - name: celery-beat-pvc
-              mountPath: /opt/celery
+              mountPath: /opt/
               subPath: celery
             - name: celery-config
-              mountPath: /opt/celery/.celery
+              mountPath: /opt/.celery
       volumes:
         - name: {{ .Values.config.celery.name }}
           configMap:
