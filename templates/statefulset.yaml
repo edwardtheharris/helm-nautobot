@@ -23,13 +23,70 @@ spec:
         app.kubernetes.io/name: {{ include "nautobot.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      initContainers:
+        - name: nautobot-init
+          args:
+            - 'cat /opt/.nautobot/init.sh > /bin/init.sh; chmod +x /bin/init.sh; /bin/init.sh'
+          command:
+            - /bin/bash
+            - '-c'
+          env:
+            - name: NAUTOBOT_DB_ENGINE
+              value: {{ .Values.database.engine }}
+            - name: NAUTOBOT_DB_HOST
+              value: postgresql.postgresql.svc.cluster.local
+            - name: NAUTOBOT_DB_NAME
+              value: {{ .Values.database.database }}
+            - name: NAUTOBOT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: password
+            - name: NAUTOBOT_DB_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: NAUTOBOT_DB_TIMEOUT
+              value: {{ .Values.database.timeout | quote }}
+            - name: NAUTOBOT_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret.{{ .Values.database.name }}
+                  key: username
+            - name: NAUTOBOT_ROOT
+              value: /opt/nautobot
+            - name: NAUTOBOT_SUPERUSER_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.superUser.secret.name }}
+                  key: token
+            - name: NAUTOBOT_SUPERUSER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.superUser.secret.name }}
+                  key: email
+            - name: NAUTOBOT_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.superUser.secret.name }}
+                  key: password
+            - name: NAUTOBOT_SUPERUSER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.superUser.secret.name }}
+                  key: username
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: {{ .Values.persistence.name }}
+              mountPath: /opt/
+              subPath: nautobot
+            - name: nautobot-config
+              mountPath: /opt/.nautobot
       containers:
         - name: nautobot
-          # command: ["nautobot-server", "--config", "/opt/nautobot/.nautobot/nautobot_config.py"]
           command:
-            - tail
-            - '-f'
-            - /dev/null
+            - /opt/nautobot/bin/nautobot-server
+            - runserver
+            - '0.0.0.0:8000'
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -97,6 +154,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.superUser.secret.name }}
                   key: password
+            - name: NAUTOBOT_TIME_ZONE
+              value: 'America/Los_Angeles'
             - name: SOCIAL_AUTH_GITHUB_KEY
               valueFrom:
                 secretKeyRef:
@@ -109,27 +168,27 @@ spec:
                   key: social_auth_github_secret
           volumeMounts:
             - name: {{ .Values.persistence.name }}
-              mountPath: /opt/nautobot
-              subPath: .
+              mountPath: /opt/
+              subPath: nautobot
             - name: {{ .Values.config.name }}
-              mountPath: /opt/nautobot/.nautobot
+              mountPath: /opt/.nautobot
       imagePullSecrets:
         - name: secret.github.ghcr
       securityContext:
-        allowPrivilegeEscalation: true
-        runAsUser: 1000
         fsGroup: 1000
       volumes:
         - name: {{ .Values.config.name }}
           configMap:
             name: nautobot-config
             items:
-              - key: nautobot_config.py
-                path: 'nautobot_config.py'
               - key: .bashrc
                 path: .bashrc
               - key: uwsgi.ini
                 path: uwsgi.ini
+              - key: reqs
+                path: reqs
+              - key: init.sh
+                path: init.sh
   volumeClaimTemplates:
     - metadata:
         name: {{ .Values.persistence.name }}

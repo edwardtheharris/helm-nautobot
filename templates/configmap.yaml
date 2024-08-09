@@ -2,12 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.config.name }}
+  labels:
+    app.kubernetes.io/name: nautobot
+    app.kubernetes.io/instance: {{ .Release.Name }}
 data:
-  nautobot_config.py: |-
-    {{- $.Files.Get "config/nautobot_config.py" | nindent 4 }}
-
   .bashrc: |-
-    {{- $.Files.Get "config/nb.bashrc" | nindent 4 }}
+    {{- $.Files.Get "config/nautobot.bashrc" | nindent 4 }}
 
   uwsgi.ini: |-
     {{- $.Files.Get "config/uwsgi.ini" | nindent 4 }}
@@ -15,18 +15,18 @@ data:
   reqs: |-
     {{- $.Files.Get "config/reqs" | nindent 4 }}
 
+  init.sh: |-
+    {{- $.Files.Get "config/nautobot.init.sh" | nindent 4 }}
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.config.celery.name }}
-labels:
+  labels:
     app.kubernetes.io/name: celery
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
-  nautobot_config.py: |-
-    {{- $.Files.Get "config/nautobot_config.py" | nindent 4 }}
-
   .bashrc: |-
     {{- $.Files.Get "config/celery.bashrc" | nindent 4 }}
 
