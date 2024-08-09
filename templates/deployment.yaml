@@ -95,7 +95,7 @@ spec:
             - /bin/bash
             - '-c'
           args:
-            - '/opt/celery/bin/nautobot-server celery worker --loglevel DEBUG'
+            - 'apk add --no-cache sudo && sudo -E -u celery /opt/celery/bin/nautobot-server celery worker --loglevel DEBUG'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
@@ -241,7 +241,7 @@ spec:
       containers:
         - name: celery-beat
           args:
-            - '/opt/celery/bin/nautobot-server celery beat --loglevel DEBUG'
+            - 'apk add --no-cache sudo && sudo -E -u celery /opt/celery/bin/nautobot-server celery beat --loglevel DEBUG'
           command:
             - /bin/bash
             - '-c'
