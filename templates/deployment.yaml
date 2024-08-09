@@ -78,21 +78,21 @@ spec:
             - /bin/bash
             - '-c'
           args:
-            - 'cat /opt/celery/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
           volumeMounts:
             - name: celery-worker-pvc
-              mountPath: /opt/celery
+              mountPath: /opt/
               subPath: celery
             - name: celery-config
-              mountPath: /opt/celery/.celery
+              mountPath: /opt/.celery
       containers:
         - name: celery-worker
           command:
             - /bin/bash
             - '-c'
           args:
-            - '/opt/celery/bin/nautobot-server --config /opt/celery/.celery/nautobot_config.py celery worker --loglevel DEBUG'
+            - '/opt/celery/bin/nautobot-server celery worker --loglevel DEBUG'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
@@ -222,21 +222,21 @@ spec:
             - /bin/bash
             - '-c'
           args:
-            - 'cat /opt/celery/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
+            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           image: "{{ .Values.config.celery.image.repository }}:{{ .Values.config.celery.image.tag }}"
           volumeMounts:
             - name: celery-beat-pvc
-              mountPath: /opt/celery
+              mountPath: /opt/
               subPath: celery
             - name: celery-config
-              mountPath: /opt/celery/.celery
+              mountPath: /opt/.celery
       containers:
         - name: celery-beat
           command:
             - /bin/bash
             - '-c'
           args:
-            - '/opt/celery/bin/nautobot-server --config /opt/celery/.celery/nautobot_config.py celery beat --loglevel DEBUG'
+            - '/opt/celery/bin/nautobot-server celery beat --loglevel DEBUG'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
@@ -327,8 +327,6 @@ spec:
           configMap:
             name: {{ .Values.config.celery.name }}
             items:
-              - key: nautobot_config.py
-                path: nautobot_config.py
               - key: .bashrc
                 path: .bashrc
               - key: reqs
