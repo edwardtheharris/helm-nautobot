@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Values.config.name }}
+  labels:
+    app.kubernetes.io/name: nautobot
+    app.kubernetes.io/instance: {{ .Release.Name }}
 data:
-  nautobot_config.py: |-
-    {{- $.Files.Get "config/nautobot_config.py" | nindent 4 }}
-
   .bashrc: |-
     {{- $.Files.Get "config/nautobot.bashrc" | nindent 4 }}
 

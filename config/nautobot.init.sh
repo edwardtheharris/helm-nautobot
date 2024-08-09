@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set -x
+
+rm -rfv /opt/nautobot
+
+mkdir -pv /opt/nautobot
+
 chown -v nautobot:nautobot /opt/nautobot
 
 apk add --no-cache sudo
@@ -8,14 +14,19 @@ sudo -u nautobot python -m venv /opt/nautobot
 
 sudo -u nautobot /opt/nautobot/bin/pip install -U pip
 
-sudo -u nautobot /opt/nautobot/bin/pip install -r /opt/nautobot/.nautobot/reqs
+sudo -u nautobot /opt/nautobot/bin/pip install -r /opt/.nautobot/reqs
 
-ln -sfv /opt/nautobot/.nautobot/.bashrc /opt/nautobot/.bashrc
-ln -sfv /opt/nautobot/.nautobot/nautobot_config.py /opt/nautobot/nautobot_config.py
+cat /opt/.nautobot/.bashrc > /opt/nautobot/.bashrc
+
+chown -v nautobot:nautobot /opt/nautobot/.bashrc
 
 NAUTOBOT_ROOT=/opt/nautobot
 export NAUTOBOT_ROOT
 
-sudo -E -u nautobot /opt/nautobot/bin/nautobot-server --config /opt/nautobot/nautobot_config.py migrate
+sudo -E -u nautobot /opt/nautobot/bin/nautobot-server init
 
-sudo -E -u nautobot /opt/nautobot/bin/nautobot-server --config /opt/nautobot/nautobot_config.py collectstatic
+sudo -E -u nautobot /opt/nautobot/bin/nautobot-server migrate
+
+sudo -E -u nautobot /opt/nautobot/bin/nautobot-server createsuperuser --email "${NAUTOBOT_SUPERUSER_EMAIL}" --username "${NAUTOBOT_SUPERUSER_USERNAME}" --noinput
+
+sudo -E -u nautobot /opt/nautobot/bin/nautobot-server collectstatic
