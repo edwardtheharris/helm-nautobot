@@ -95,7 +95,7 @@ spec:
             - /bin/bash
             - '-c'
           args:
-            - 'apk add --no-cache sudo && sudo -E -u celery /opt/celery/bin/nautobot-server celery worker --loglevel DEBUG'
+            - 'apk add --no-cache sudo && sudo -E -u celery /opt/celery/bin/nautobot-server celery worker --loglevel DEBUG --queues celery-default,default,default-celery,jobs,tasks'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
