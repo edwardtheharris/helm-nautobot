@@ -1,4 +1,15 @@
-name: Test Helm Chart
+###
+# ```{rubric} Helm Tests
+# ```
+# ---
+# This action provides basing lint and unit tests for the chart.
+#
+# ```{literalinclude} /.github/workflows/helm.yml
+# :caption: run conditions, name
+# :start-at: "Helm Tests\n"
+# :end-before: "###"
+# ```
+name: Helm Tests
 on:
   pull_request:
     branches:
@@ -12,9 +23,11 @@ on:
 ###
 # ```{rubric} Permissions Updates
 # ```
+# ---
 # Enable read for contents and issues, and write for checks and PRs.
 #
-# ```{literalinclude} /.github/workflows/pages.yml
+# ```{literalinclude} /.github/workflows/helm.yml
+# :caption: permissions
 # :language: yaml
 # :start-at: "permissions:\n"
 # :end-before: "###\n"
@@ -32,7 +45,12 @@ permissions:
 # A workflow run is made up of one or more
 # jobs that can run sequentially or in parallel
 #
+# ```{literalinclude} /.github/workflows/helm.yml
+# :caption: jobs
+# :start-at: "jobs:\n"
+# ```
 jobs:
+
   ###
   # ```{rubric} Helm Setup
   # ```
