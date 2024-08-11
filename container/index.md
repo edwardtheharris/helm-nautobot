@@ -17,7 +17,11 @@ To build the nautobot container you run the build command below.
 
 VERSION=0.0.1
 
-docker build -t ghcr.io/edwardtheharris/helm-nautobot/nautobot:${VERSION} \
+export VERSION
+
+docker build --build-arg VERSION="${VERSION}" \
+  --build-arg PYTHON_VERSION='3.12' \
+  -t ghcr.io/edwardtheharris/helm-nautobot/nautobot:${VERSION} \
   --progress plain --push -f container/Dockerfile .
 ```
 
@@ -29,7 +33,10 @@ argument as shown below.
 
 VERSION=0.0.1
 
-docker build --build-arg USER=celery \
+export VERSION
+
+docker build --build-arg PYTHON_VERSION='3.12' --build-arg USER=celery \
+    --build-arg="${VERSION}" \
     -t ghcr.io/edwardtheharris/helm-nautobot/celery:${VERSION} \
     --progress plain --push -f container/Dockerfile .
 ```

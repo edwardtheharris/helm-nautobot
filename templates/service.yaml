@@ -4,7 +4,10 @@ kind: Service
 metadata:
   name: {{ .Values.nameOverride }}
   labels:
-    service.kubernetes.io/name: {{ .Values.nameOverride }}
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: nautobot
+    app.kubernetes.io/part-of: nautobot
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -13,14 +16,19 @@ spec:
       protocol: TCP
       name: nautobot
   selector:
-    {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: nautobot
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: celery-beat
   labels:
-    service.kubernetes.io/name: celery-beat
+    app.kubernetes.io/component: scheduler
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: celery-beat
+    app.kubernetes.io/part-of: nautobot
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -29,21 +37,28 @@ spec:
       protocol: TCP
       name: celery-beat
   selector:
-    {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
+    app.kubernetes.io/component: scheduler
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: celery-beat
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: celery-worker
   labels:
-    service.kubernetes.io/name: celery-worker
+    app.kubernetes.io/component: scheduler
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: celery-worker
+    app.kubernetes.io/part-of: nautobot
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: 5673
       targetPort: 5673
       protocol: TCP
-      name: nautobot
+      name: celery-worker
   selector:
-    {{ .Values.service.selectorLabels | toYaml | nindent 4 }}
+    app.kubernetes.io/component: scheduler
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: celery-worker
 {{ end }}

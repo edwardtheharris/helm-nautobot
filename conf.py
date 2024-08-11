@@ -33,11 +33,12 @@ copyright = '2024, Xander Harris'
 
 exclude_patterns = [
     '_build',
-    'Thumbs.db',
     '.DS_Store',
-    '.venv/*',
-    '.tmp/*',
+    '.gnupg/*',
     '.pytest_cache/*',
+    '.tmp/*',
+    '.venv/*',
+    'Thumbs.db',
 ]
 
 extensions = [

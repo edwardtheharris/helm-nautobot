@@ -1,34 +1,89 @@
 ###
-# Default values for template.
+# ```{rubric} Default Values
+# ```
+# ---
+# Default values for the Helm Nautobot template.
+#
 # This is a YAML-formatted file.
+#
 # Declare variables to be passed into your templates.
+#
+# ```{literalinclude} /values.yaml
+# :caption: affinity
+# :language: yaml
+# :start-at: "affinity:\n"
+# :end-before: "###\n"
+# ```
 affinity:
   nodeAffinity:
   requiredDuringSchedulingIgnoredDuringExecution:
     nodeSelectorTerms:
-      - matchExpressions:
-          - key: kubernetes.io/os
-            operator: In
-            values:
-              - linux
+    - matchExpressions:
+      - key: kubernetes.io/os
+        operator: In
+        values:
+        - linux
+
+###
+# ```{rubric} Autoscaling
+# ```
+# ---
+# Configure auto scaling on the cluster.
+#
+# ```{literalinclude} /values.yaml
+# :caption: affinity
+# :language: yaml
+# :start-at: "autoscaling:\n"
+# :end-before: "###\n"
+# ```
+#
+# `targetCPUUtilizationPercentage: 80`{l=yaml}
+#
+# `targetMemoryUtilizationPercentage: 80`{l=yaml}
 autoscaling:
   enabled: false
   maxReplicas: 0
   minReplicas: 0
-  # targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
+
+###
+# ```{rubric} Nautobot Config
+# ```
+# ---
+# Configure the Nautobot deployment.
+#
+# ```{literalinclude} /values.yaml
+# :caption: config
+# :language: yaml
+# :start-at: "config:\n"
+# :end-before: "###\n"
+# ```
 config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache
   celery:
-    image:
+    img:
       repository: ghcr.io/edwardtheharris/helm-nautobot/celery
-      tag: '0.0.1.rc29'
+      tag: '0.0.1.rc30'
     broker: 'redis://redis.redis.svc.cluster.local:6379/0'
     name: celery-config
     results: 'redis://redis.redis.svc.cluster.local:6379/0'
     root: '/opt/celery'
   name: nautobot-config
+  root: /opt/nautobot
+
+###
+# ```{rubric} Database
+# ```
+# ---
+# Configure a relational database connection, MySQL and PostgreSQL are
+# supported.
+#
+# ```{literalinclude} /values.yaml
+# :caption: database
+# :language: yaml
+# :start-at: "database:\n"
+# :end-before: "###\n"
+# ```
 database:
   database: nautobot
   engine: django.db.backends.postgresql
@@ -39,17 +94,77 @@ database:
   secretfile: secrets/secrets.yaml
   timeout: '300'
   username: ""
+
+###
+# ```{rubric} Full Name Override
+# ```
+# ---
+# Override the full name of the release.
+#
+# ```{literalinclude} /values.yaml
+# :caption: fullname override
+# :language: yaml
+# :start-at: "fullnameOverride: \"nautobot\"\n"
+# :end-before: "###\n"
+# ```
 fullnameOverride: "nautobot"
+
+###
+# ```{rubric} Container image settings
+# ```
+# ---
+# Define the image, tag and repository to be deployed.
+#
+# ```{literalinclude} /values.yaml
+# :caption: image
+# :language: yaml
+# :start-at: "image:\n"
+# :end-before: "###\n"
+# ```
 image:
   pullPolicy: Always
   repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: '0.0.1.rc29'
+  tag: '0.0.1.rc30'
   secret:
     name: ghcr
     data: ''
+
+###
+# ```{rubric} Image Pull Secrets
+# ```
+# ---
+# Secrets required to pull the deployment image.
+#
+# ```{literalinclude} /values.yaml
+# :caption: imagePullSecrets
+# :language: yaml
+# :start-at: "imagePullSecrets:\n"
+# :end-before: "###\n"
+# ```
 imagePullSecrets:
-  - name: ghcr
+- name: ghcr
+
+###
+# ```{rubric} Ingress
+# ```
+# ---
+# Configure Ingress for the service.
+#
+# ```{literalinclude} /values.yaml
+# :caption: ingress
+# :language: yaml
+# :start-at: "ingress:\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: tls example
+# tls:
+#  - secretName: chart-example-tls
+#    hosts:
+#      - chart-example.local
+# ```
 ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -62,37 +177,144 @@ ingress:
     - path: /
       pathType: ImplementationSpecific
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+
+###
+# ```{rubric} Liveness Probe
+# ```
+# ---
+# Set a command to test for liveness.
+#
+# ```{literalinclude} /values.yaml
+# :caption: liveness probe
+# :language: yaml
+# :start-at: "livenessProbe:\n"
+# :end-before: "###\n"
+# ```
 livenessProbe:
   exec:
     command:
-    - pg_isready
-    - -U
-    - postgres
-  failureThreshold: 3 # When to give up and restart the container
-  initialDelaySeconds: 30 # Delay before the first probe is initiated
-  periodSeconds: 10 # How often to perform the probe
-  successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful after having failed
-  timeoutSeconds: 5 # When the probe times out
+    - /opt/nautobot/bin/nautobot-server
+    - status
+  # When to give up and restart the container
+  failureThreshold: 3
+  # Delay before the first probe is initiated
+  initialDelaySeconds: 30
+  # How often to perform the probe
+  periodSeconds: 10
+  # Minimum consecutive successes for the probe to
+  # be considered successful after having failed
+  successThreshold: 1
+  # When the probe times out
+  timeoutSeconds: 5
+
+###
+# ```{rubric} Name Override
+# ```
+# ---
+# Override the release name, but not quite all the way.
+#
+# ```{literalinclude} /values.yaml
+# :caption: name override
+# :language: yaml
+# :start-at: "nameOverride: \"nautobot\"\n"
+# :end-before: "###\n"
+# ```
 nameOverride: "nautobot"
-nautobot:
-  social_auth_github_key: sagk
-  social_auth_github_secret: sags
+
+###
+# ```{rubric} Node Selector
+# ```
+# ---
+# Select nodes for workloads to run on.
+#
+# ```{literalinclude} /values.yaml
+# :caption: affinity
+# :language: yaml
+# :start-at: "nodeSelector:\n"
+# :end-before: "###\n"
+# ```
 nodeSelector:
   kubernetes.io/os: linux
+
+###
+# ```{rubric} Persistence Configuration
+# ```
+# ---
+# Provision persistent storage if required.
+#
+# ```{literalinclude} /values.yaml
+# :caption: persistence
+# :language: yaml
+# :start-at: "persistence:\n"
+# :end-before: "###\n"
+# ```
 persistence:
-  claim:
-    enabled: false
-  name: nautobot
-  size: 50Gi
+  name: nautobot-pvc
+  size: 10Gi
   storageClass: csi-driver-lvm-linear
+
+###
+# ```{rubric} Pod Annotations
+# ```
+# ---
+# Apply these annotations to all pods.
+#
+# ```{literalinclude} /values.yaml
+# :caption: pod annotations
+# :language: yaml
+# :start-at: "podAnnotations: {}\n"
+# :end-before: "###\n"
+# ```
 podAnnotations: {}
+
+###
+# ```{rubric} Pod Labels
+# ```
+# ---
+# Apply these labels to all pods.
+#
+# ```{literalinclude} /values.yaml
+# :caption: pod labels
+# :language: yaml
+# :start-at: "podLabels:\n"
+# :end-before: "###\n"
+# ```
 podLabels:
   app: nautobot
+
+###
+# ```{rubric} Pod Security Context
+# ```
+# ---
+# Define security context for pods.
+#
+# ```{literalinclude} /values.yaml
+# :caption: pod security context
+# :language: yaml
+# :start-at: "podSecurityContext: {}\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: pod security context EXAMPLE
+#
+# podSecurityContext:
+#  fsGroup: 1000
+# ```
 podSecurityContext: {}
-# fsGroup: 2000
+
+###
+# ```{rubric} Replica Count
+# ```
+# ---
+# Deploy this many replicas by default.
+#
+# ```{literalinclude} /values.yaml
+# :caption: replicas
+# :language: yaml
+# :start-at: "replicaCount: 1\n"
+# :end-before: "###\n"
+# ```
 # readinessProbe:
 #   exec:
 #     command:
@@ -105,37 +327,95 @@ podSecurityContext: {}
 #   successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful
 #   timeoutSeconds: 1 # When the probe times out
 replicaCount: 1
-resources:
-  limits:
-    cpu: 2
-    memory: 4096Mi
+
 ###
-# We usually recommend not to specify default resources and to leave this as a conscious
-# choice for the user. This also increases chances charts run on environments with little
-# resources, such as Minikube. If you do want to specify resources, uncomment the following
-# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# ```{rubric} Resource Requests and Limits
+# ```
+# ---
+# Set requests and limits for workload resources.
+#
+# ```{literalinclude} /values.yaml
+# :caption: resources
+# :language: yaml
+# :start-at: "resources:\n"
+# :end-before: "###\n"
+# ```
+#
+# We usually recommend not to specify default resources and to leave this as
+# a conscious choice for the user. This also increases chances charts run on
+# environments with little resources, such as Minikube. If you do want to
+# specify resources, uncomment the following lines, adjust them as necessary,
+# and remove the curly braces after `resources:`{l=yaml}.
+#
+# ```{code-block} yaml
+# :caption: resources example
+#
 # limits:
 #   cpu: 100m
 #   memory: 128Mi
 # requests:
 #   cpu: 100m
 #   memory: 128Mi
+# ```
+resources:
+  limits:
+    cpu: 2
+    memory: 4096Mi
 
+###
+# ```{rubric} Security Context
+# ```
+# ---
+# Set a security context on the workloads.
+#
+# ```{literalinclude} /values.yaml
+# :caption: securityContext
+# :language: yaml
+# :start-at: "securityContext: {}\n"
+# :end-before: "###\n"
+# ```
 securityContext: {}
+
+###
+# ```{rubric} Service
+# ```
+# ---
+# Define the service used to access the application.
+#
+# ```{literalinclude} /values.yaml
+# :caption: service
+# :language: yaml
+# :start-at: "service:\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: capabilities example
 # capabilities:
 #   drop:
 #   - ALL
 # readOnlyRootFilesystem: true
 # runAsNonRoot: true
 # runAsUser: 1000
+# ```
 service:
   enabled: true
   port: 8000
   targetPort: 8000
   type: ClusterIP
-  selectorLabels:
-    app.kubernetes.io/component: network
-    app.kubernetes.io/name: nautobot
+
+###
+# ```{rubric} Service Account
+# ```
+# ---
+# When enabled, will create a Kubernetes Service Account during deployment.
+#
+# ```{literalinclude} /values.yaml
+# :caption: serviceAccount
+# :language: yaml
+# :start-at: "serviceAccount:\n"
+# :end-before: "###\n"
+# ```
 serviceAccount:
   # Annotations to add to the service account
   annotations:
@@ -147,32 +427,114 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: "nautobot"
+
+###
+# ```{rubric} Single Sign On
+# ```
+# ---
+# Configuration for Single Sign On
+#
+# ```{literalinclude} /values.yaml
+# :caption: sso
+# :language: yaml
+# :start-at: "sso:\n"
+# :end-before: "###\n"
+# ```
+sso:
+  social_auth_github_key: ''
+  social_auth_github_secret: ''
+
+###
+# ```{rubric} Super User Config
+# ```
+# ---
+# When enabled, will create a super user account during deployment.
+#
+# ```{literalinclude} /values.yaml
+# :caption: superUser
+# :language: yaml
+# :start-at: "superUser:\n"
+# :end-before: "###\n"
+# ```
 superUser:
   create: true
   email: nautobot@nautobot.svc.cluster.local
-  name: nb-admin
   password: ""
   secret:
     name: secret.superuser
   secretKey: '57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f'
   token: ""
   username: ""
+
+###
+# ```{rubric} Tolerations
+# ```
+# ---
+# Define taints that will be tolerated to run workloads on nodes.
+#
+# ```{literalinclude} /values.yaml
+# :caption: tolerations
+# :language: yaml
+# :start-at: "tolerations: []\n"
+# :end-before: "###\n"
+# ```
 tolerations: []
-type: StatefulSet
+
+###
+# ```{rubric} Type
+# ```
+# ---
+# May be set to `Deployment` or `StatefulSet`.
+#
+# ```{literalinclude} /values.yaml
+# :caption: type
+# :language: yaml
+# :start-at: "type: Deployment\n"
+# :end-before: "###\n"
+# ```
+type: Deployment
+
+###
+# ```{rubric} Volume Mounts
+# ```
+# ---
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
+#
+# ```{literalinclude} /values.yaml
+# :caption: volume mounts
+# :language: yaml
+# :start-at: "volumeMounts: []\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: volumeMounts example
 # - mountPath: "/mnt/k8s/psql"
 #   name: data
 #   readOnly: false
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true
+# ```
+volumeMounts: []
+
+###
+# ```{rubric} Volumes
+# ```
+# ---
 # Additional volumes on the output Deployment definition.
-volumes: []
+#
+# ```{literalinclude} /values.yaml
+# :caption: volumes
+# :language: yaml
+# :start-at: "volumes: []\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: volume example
 # - name: foo
 #   secret:
 #     secretName: mysecret
 #     optional: false
-
-
-
+# ```
+volumes: []

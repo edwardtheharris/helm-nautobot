@@ -12,6 +12,9 @@ data:
   uwsgi.ini: |-
     {{- $.Files.Get "config/uwsgi.ini" | nindent 4 }}
 
+  resolv.conf: |-
+    {{- $.Files.Get "config/resolv.conf" | nindent 4 }}
+
   reqs: |-
     {{- $.Files.Get "config/reqs" | nindent 4 }}
 
@@ -32,6 +35,9 @@ data:
 
   reqs: |-
     {{- $.Files.Get "config/reqs" | nindent 4 }}
+
+  resolv.conf: |-
+    {{- $.Files.Get "config/resolv.conf" | nindent 4 }}
 
   init.sh: |-
     {{- $.Files.Get "config/celery.init.sh" | nindent 4 }}
