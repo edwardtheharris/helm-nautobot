@@ -1,8 +1,6 @@
 gitpython
-celery[redis]
 loguru
 lxml
 nautobot[sso]
-redis
 wheel
 xmlsec

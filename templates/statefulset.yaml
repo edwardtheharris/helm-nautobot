@@ -3,11 +3,11 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
+    app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/name: {{ .Values.nameOverride }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
   labels:
-    app.kubernets.io/name: {{ .Values.nameOverride }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernets.io/name: {{ .Values.nameOverride }}
   name: {{ .Values.fullnameOverride }}
 spec:
   selector:

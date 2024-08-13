@@ -37,7 +37,6 @@ Common labels
 helm.sh/chart: {{ include "nautobot.chart" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/version: {{ .Chart.AppVersion }}
-app.kubernetes.io/component: backend
 app.kubernetes.io/part-of: nautobot
 {{ include "nautobot.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
@@ -50,7 +49,6 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "nautobot.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "nautobot.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

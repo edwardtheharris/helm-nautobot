@@ -1,11 +1,11 @@
-FROM python:3.11-alpine AS build
+ARG PYTHON_VERSION='3.12'
+FROM python:${PYTHON_VERSION}-alpine AS build
+ARG VERSION
 ARG USER=nautobot
 LABEL io.ghcr.edwardtheharris.helm-nautobot.editor="Xander Harris"
 LABEL io.ghcr.edwardtheharris.helm-nautobot.name="${USER}"
 LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-nautobot"
-LABEL io.ghcr.edwardtheharris.helm-nautobot.version="0.0.1.rc30"
-COPY container/${USER}.entrypoint.sh /bin/entrypoint.sh
-COPY container/reqs /opt/${USER}/reqs
+LABEL io.ghcr.edwardtheharris.helm-nautobot.version="${VERSION}"
 RUN apk add --no-cache \
     alpine-sdk \
     bash \
@@ -21,7 +21,6 @@ RUN apk add --no-cache \
     vim \
     xmlsec-dev \
     zlib-dev \
-    && chmod +x /bin/entrypoint.sh \
     && groupadd ${USER} \
     && useradd -s /bin/bash -m -d /opt/${USER} -g ${USER} ${USER}
-CMD ["/bin/entrypoint.sh", "${USER}"]
+CMD ["tail", "-f", "/dev/null"]
