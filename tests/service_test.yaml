@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+# Source: nautobot/templates/tests/service_test.yaml
+release:
+  name: nautobot
+suite: services
+templates:
+- templates/service.yaml
+values:
+- ../values.yaml
+
+tests:
+
+- it: Should create a Service named 'nautobot' with correct metadata and spec
+  asserts:
+  - equal:
+      path: metadata.name
+      value: nautobot
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/component: primary
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: nautobot
+        app.kubernetes.io/part-of: nautobot
+  - equal:
+      path: spec.type
+      value: ClusterIP
+  - equal:
+      path: spec.ports[0].port
+      value: 8000
+  - equal:
+      path: spec.ports[0].targetPort
+      value: 8000
+  - equal:
+      path: spec.ports[0].protocol
+      value: TCP
+  - equal:
+      path: spec.ports[0].name
+      value: nautobot
+  - equal:
+      path: spec.selector
+      value:
+        app.kubernetes.io/component: primary
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: nautobot
+  documentIndex: 0
+
+- it: Should create a Service named 'celery-beat' with correct metadata and spec
+  asserts:
+  - equal:
+      path: metadata.name
+      value: celery-beat
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-beat
+        app.kubernetes.io/part-of: nautobot
+  - equal:
+      path: spec.type
+      value: ClusterIP
+  - equal:
+      path: spec.ports[0].port
+      value: 5672
+  - equal:
+      path: spec.ports[0].targetPort
+      value: 5672
+  - equal:
+      path: spec.ports[0].protocol
+      value: TCP
+  - equal:
+      path: spec.ports[0].name
+      value: celery-beat
+  - equal:
+      path: spec.selector
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-beat
+  documentIndex: 1
+
+- it: Should create a Service named 'celery-worker' with correct metadata and spec
+  asserts:
+  - equal:
+      path: metadata.name
+      value: celery-worker
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-worker
+        app.kubernetes.io/part-of: nautobot
+  - equal:
+      path: spec.type
+      value: ClusterIP
+  - equal:
+      path: spec.ports[0].port
+      value: 5673
+  - equal:
+      path: spec.ports[0].targetPort
+      value: 5673
+  - equal:
+      path: spec.ports[0].protocol
+      value: TCP
+  - equal:
+      path: spec.ports[0].name
+      value: celery-worker
+  - equal:
+      path: spec.selector
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-worker
+  documentIndex: 2

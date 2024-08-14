@@ -1,1 +1,10 @@
 **/*.md
+_build/
+.gnupg/
+.venv/
+.vscode/
+config/
+secrets/
+templates/
+tests/
+test.yaml
