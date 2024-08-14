@@ -1,0 +1,147 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+# Source: nautobot/templates/tests/pvc_test.yaml
+release:
+  name: nautobot
+suite: pvc
+templates:
+- templates/pvc.yaml
+values:
+- ../values.yaml
+
+tests:
+
+- it: Should create a PVC named 'nautobot-pvc' with correct metadata and spec
+  asserts:
+  - equal:
+      path: metadata.name
+      value: nautobot-pvc
+  - equal:
+      path: metadata.namespace
+      value: nautobot
+  - equal:
+      path: metadata.annotations.name
+      value: nautobot-pvc
+  - equal:
+      path: metadata.annotations
+      value:
+        app.kubernetes.io/component: primary
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: nautobot-pvc
+        name: nautobot-pvc
+        volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/component: primary
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: nautobot-pvc
+  - equal:
+      path: metadata.finalizers[0]
+      value: kubernetes.io/pvc-protection
+  - equal:
+      path: spec.accessModes
+      value:
+      - ReadWriteMany
+      - ReadWriteOnce
+  - equal:
+      path: spec.resources.requests.storage
+      value: "10Gi"
+  - equal:
+      path: spec.storageClassName
+      value: csi-driver-lvm-linear
+  - equal:
+      path: spec.volumeMode
+      value: Filesystem
+  documentIndex: 0
+
+- it: Should create a PVC named 'celery-beat' with correct metadata and spec
+  asserts:
+  - equal:
+      path: metadata.name
+      value: celery-beat
+  - equal:
+      path: metadata.namespace
+      value: nautobot
+  - equal:
+      path: metadata.annotations.name
+      value: celery-beat
+  - equal:
+      path: metadata.annotations
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-beat
+        app.kubernetes.io/part-of: nautobot
+        name: celery-beat
+        volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-beat
+        app.kubernetes.io/part-of: nautobot
+  - equal:
+      path: metadata.finalizers[0]
+      value: kubernetes.io/pvc-protection
+  - equal:
+      path: spec.accessModes
+      value:
+      - ReadWriteOnce
+      - ReadWriteMany
+  - equal:
+      path: spec.resources.requests.storage
+      value: "10Gi"
+  - equal:
+      path: spec.storageClassName
+      value: csi-driver-lvm-linear
+  - equal:
+      path: spec.volumeMode
+      value: Filesystem
+  documentIndex: 1
+
+- it: Should create a PVC named 'celery-worker' with correct metadata and spec
+  asserts:
+  - equal:
+      path: metadata.name
+      value: celery-worker
+  - equal:
+      path: metadata.namespace
+      value: nautobot
+  - equal:
+      path: metadata.annotations.name
+      value: celery-worker
+  - equal:
+      path: metadata.annotations
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-worker
+        app.kubernetes.io/part-of: nautobot
+        name: celery-worker
+        volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/component: scheduler
+        app.kubernetes.io/instance: nautobot
+        app.kubernetes.io/name: celery-worker
+        app.kubernetes.io/part-of: nautobot
+  - equal:
+      path: metadata.finalizers[0]
+      value: kubernetes.io/pvc-protection
+  - equal:
+      path: spec.accessModes
+      value:
+      - ReadWriteOnce
+      - ReadWriteMany
+  - equal:
+      path: spec.resources.requests.storage
+      value: "10Gi"
+  - equal:
+      path: spec.storageClassName
+      value: csi-driver-lvm-linear
+  - equal:
+      path: spec.volumeMode
+      value: Filesystem
+  documentIndex: 2

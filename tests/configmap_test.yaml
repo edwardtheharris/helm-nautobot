@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+# Source: nautobot/templates/tests/configmap_test.yaml
+release:
+  name: nautobot
+suite: configmaps
+templates:
+- templates/configmap.yaml
+values:
+- ../values.yaml
+
+tests:
+
+- it: Should create a ConfigMap named 'nautobot-config' with correct metadata and data fields
+  asserts:
+  - equal:
+      path: metadata.name
+      value: nautobot-config
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/name: nautobot
+        app.kubernetes.io/instance: nautobot
+  - matchRegex:
+      path: data[".bashrc"]
+      pattern: "^.*bash"
+  - matchRegex:
+      path: data["uwsgi.ini"]
+      pattern: ".*uwsgi"
+  - matchRegex:
+      path: data["resolv.conf"]
+      pattern: "nameserver 8.8.8.8"
+  - matchRegex:
+      path: data["reqs"]
+      pattern: "nautobot\\[sso\\]"
+  - matchRegex:
+      path: data["init.sh"]
+      pattern: "^.*bash"
+  documentIndex: 0
+
+- it: Should create a ConfigMap named 'celery-config' with correct metadata and data fields
+  asserts:
+  - equal:
+      path: metadata.name
+      value: celery-config
+  - equal:
+      path: metadata.labels
+      value:
+        app.kubernetes.io/name: celery
+        app.kubernetes.io/instance: nautobot
+  - matchRegex:
+      path: data[".bashrc"]
+      pattern: "^.*bash"
+  - matchRegex:
+      path: data["resolv.conf"]
+      pattern: "nameserver 8.8.8.8"
+  - matchRegex:
+      path: data["reqs"]
+      pattern: "nautobot\\[sso\\]"
+  - matchRegex:
+      path: data["init.sh"]
+      pattern: "^.*bash"
+  documentIndex: 1

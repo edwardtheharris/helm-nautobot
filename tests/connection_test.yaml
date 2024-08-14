@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+# Source: nautobot/templates/tests/test-connection_test.yaml
+
+suite: test-connection
+release:
+  name: nautobot
+templates:
+- "templates/tests/test-connection.yaml"
+values:
+- ../values.yaml
+
+tests:
+
+- it: Should create a Pod with the correct metadata
+  asserts:
+  - equal:
+      path: metadata.name
+      value: nautobot-test-connection
+  - equal:
+      path: metadata.labels
+      value:
+        helm.sh/chart: nautobot-0.0.2
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: "2.3.0"
+        app.kubernetes.io/part-of: nautobot
+        app.kubernetes.io/instance: nautobot
+  - equal:
+      path: metadata.annotations
+      value:
+        helm.sh/hook: test
+        helm.sh/hook-delete-policy: hook-succeeded
+
+- it: Should create a Pod with the correct spec
+  asserts:
+  - equal:
+      path: spec.restartPolicy
+      value: Never
+  - equal:
+      path: spec.containers[0].name
+      value: wget
+  - equal:
+      path: spec.containers[0].image
+      value: busybox
+  - equal:
+      path: spec.containers[0].command[0]
+      value: wget
+  - equal:
+      path: spec.containers[0].args[0]
+      value: nautobot:8000
+  documentSelector:
+    path: kind
+    value: Pod

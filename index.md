@@ -98,7 +98,7 @@ helm -n nautobot uninstall nautobot
 ```{autoyaml} Chart.yaml
 ```
 
-#### Values
+### Values
 
 ```{autoyaml} values.yaml
 ```
