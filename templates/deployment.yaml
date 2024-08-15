@@ -93,10 +93,11 @@ spec:
               mountPath: /opt/.nautobot
       containers:
         - name: {{ .Values.nameOverride }}
+          args:
+            - 'apk add --no-cache sudo && sudo -E -u nautobot /opt/nautobot/bin/nautobot-server start --ini /opt/nautobot/uwsgi.ini'
           command:
-            - tail
-            - '-f'
-            - /dev/null
+            - /bin/bash
+            - '-c'
           env:
             - name: NAUTOBOT_ALLOWED_HOSTS
               value: {{ .Values.config.allowed_hosts | quote }}
@@ -180,9 +181,8 @@ spec:
             - mountPath: /opt
               name: nautobot-pvc
               subPath: nautobot
-            - mountPath: /opt
+            - mountPath: /opt/.nautobot
               name: {{ .Values.config.name }}
-              subPath: .nautobot
       imagePullSecrets:
         - name: secret.github.ghcr
       volumes:

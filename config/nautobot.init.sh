@@ -19,8 +19,10 @@ sudo -u nautobot /opt/nautobot/bin/pip install --no-cache-dir -U pip
 sudo -u nautobot /opt/nautobot/bin/pip install --no-cache-dir -r /opt/.nautobot/reqs
 
 cat /opt/.nautobot/.bashrc > /opt/nautobot/.bashrc
+cat /opt/.nautobot/uwsgi.ini > /opt/nautobot/uwsgi.ini
 
 chown -v nautobot:nautobot /opt/nautobot/.bashrc
+chown -v nautobot:nautobot /opt/nautobot/uwsgi.ini
 
 NAUTOBOT_ROOT=/opt/nautobot
 
