@@ -5,6 +5,7 @@ ARG USER=nautobot
 LABEL io.ghcr.edwardtheharris.helm-nautobot.editor="Xander Harris"
 LABEL io.ghcr.edwardtheharris.helm-nautobot.name="${USER}"
 LABEL org.opencontainers.image.source="https://github.com/edwardtheharris/helm-nautobot"
+LABEL org.opencontainers.image.description="Runs ${USER} for nautobot on Kubernetes."
 LABEL io.ghcr.edwardtheharris.helm-nautobot.version="${VERSION}"
 RUN apk add --no-cache \
     alpine-sdk \
@@ -13,6 +14,7 @@ RUN apk add --no-cache \
     iputils-ping \
     libxml2-dev \
     jpeg-dev \
+    mailcap \
     nmap \
     pkgconfig \
     python3-dev \

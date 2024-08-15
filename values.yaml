@@ -61,10 +61,27 @@ config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache
   celery:
+    broker: 'redis://redis.redis.svc.cluster.local:6379/0'
+    livenessProbe:
+      exec:
+        command:
+        - /opt/nautobot/bin/nautobot-server
+        - celery
+        - status
+      # When to give up` and restart the container
+      failureThreshold: 3
+      # Delay before the first probe is initiated
+      initialDelaySeconds: 30
+      # How often to perform the probe
+      periodSeconds: 10
+      # Minimum consecutive successes for the probe to
+      # be considered successful after having failed
+      successThreshold: 1
+      # When the probe times out
+      timeoutSeconds: 5
     img:
       repository: ghcr.io/edwardtheharris/helm-nautobot/celery
-      tag: '0.0.1.rc30'
-    broker: 'redis://redis.redis.svc.cluster.local:6379/0'
+      tag: '0.0.2'
     name: celery-config
     results: 'redis://redis.redis.svc.cluster.local:6379/0'
     root: '/opt/celery'
@@ -125,7 +142,7 @@ image:
   pullPolicy: Always
   repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: '0.0.1.rc30'
+  tag: '0.0.2'
   secret:
     name: ghcr
     data: ''

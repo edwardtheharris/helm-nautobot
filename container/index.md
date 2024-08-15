@@ -15,7 +15,7 @@ To build the nautobot container you run the build command below.
 ```{code-block} shell
 :caption: build nautobot
 
-VERSION=0.0.1
+VERSION=0.0.2
 
 export VERSION
 
@@ -31,7 +31,7 @@ argument as shown below.
 ```{code-block} shell
 :caption: build celery
 
-VERSION=0.0.1
+VERSION=0.0.2
 
 export VERSION
 

@@ -39,7 +39,7 @@ tests:
       value: nautobot-init
   - equal:
       path: spec.template.spec.initContainers[0].image
-      value: ghcr.io/edwardtheharris/helm-nautobot/nautobot:0.0.1.rc30
+      value: ghcr.io/edwardtheharris/helm-nautobot/nautobot:0.0.2
   - equal:
       path: spec.template.spec.initContainers[0].command[0]
       value: /bin/bash
@@ -61,16 +61,16 @@ tests:
       value: nautobot
   - equal:
       path: spec.template.spec.containers[0].image
-      value: ghcr.io/edwardtheharris/helm-nautobot/nautobot:0.0.1.rc30
+      value: ghcr.io/edwardtheharris/helm-nautobot/nautobot:0.0.2
   - equal:
       path: spec.template.spec.containers[0].command[0]
-      value: tail
+      value: /bin/bash
   - equal:
       path: spec.template.spec.containers[0].command[1]
-      value: '-f'
+      value: '-c'
   - equal:
-      path: spec.template.spec.containers[0].command[2]
-      value: /dev/null
+      path: spec.template.spec.containers[0].args[0]
+      value: 'apk add --no-cache sudo && sudo -E -u nautobot /opt/nautobot/bin/nautobot-server start --ini /opt/nautobot/uwsgi.ini'
   - equal:
       path: spec.template.spec.containers[0].env[0].name
       value: NAUTOBOT_ALLOWED_HOSTS
@@ -113,7 +113,7 @@ tests:
       value: celery-worker-init
   - equal:
       path: spec.template.spec.initContainers[0].image
-      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.1.rc30
+      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.2
   - equal:
       path: spec.template.spec.initContainers[0].command[0]
       value: /bin/bash
@@ -135,7 +135,7 @@ tests:
       value: celery-worker
   - equal:
       path: spec.template.spec.containers[0].image
-      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.1.rc30
+      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.2
   - equal:
       path: spec.template.spec.containers[0].command[0]
       value: /bin/bash
@@ -181,7 +181,7 @@ tests:
       value: celery-beat-init
   - equal:
       path: spec.template.spec.initContainers[0].image
-      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.1.rc30
+      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.2
   - equal:
       path: spec.template.spec.initContainers[0].command[0]
       value: /bin/bash
@@ -203,7 +203,7 @@ tests:
       value: celery-beat
   - equal:
       path: spec.template.spec.containers[0].image
-      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.1.rc30
+      value: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.2
   - equal:
       path: spec.template.spec.containers[0].command[0]
       value: /bin/bash
