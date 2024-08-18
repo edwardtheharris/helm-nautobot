@@ -4,18 +4,15 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   annotations:
-    name: {{ .Values.persistence.name }}
-    app.kubernetes.io/component: primary
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: {{ .Values.persistence.name }}
+    name: {{ include "nautobot.pvc" . }}
+    {{- include "nautobot.labels" . | nindent 4 }}
     volume.kubernetes.io/storage-provisioner: lvm.csi.metal-stack.io
   finalizers:
     - kubernetes.io/pvc-protection
   labels:
-    app.kubernetes.io/component: primary
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: {{ .Values.persistence.name }}
-  name: {{ .Values.persistence.name }}
+    {{- include "nautobot.labels" . | nindent 4 }}
+    name: {{ include "nautobot.pvc" . }}
+  name: {{ include "nautobot.pvc" . | quote }}
   namespace: {{ .Release.Name }}
 spec:
   accessModes:
@@ -23,8 +20,8 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.persistence.size }}
-  storageClassName: {{ .Values.persistence.storageClass }}
+      storage: 10Gi
+  storageClassName: csi-driver-lvm-linear
   volumeMode: Filesystem
 {{ end }}
 ---

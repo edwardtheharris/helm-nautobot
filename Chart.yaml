@@ -31,6 +31,27 @@ apiVersion: v2
 appVersion: "2.3.0"
 
 ###
+# ```{rubric} Dependencies
+# ```
+# ---
+# A list of chart dependencies.
+#
+# ```{literalinclude} /Chart.yaml
+# :language: yaml
+# :start-at: "dependencies:\n"
+# :end-before: "###\n"
+# ```
+dependencies:
+- condition: redis.enabled
+  name: redis
+  repository: file://../helm-redis
+  version: 0.0.4
+- condition: postgresql.enabled
+  name: postgresql
+  repository: file://../helm-postgresql
+  version: 0.0.3
+
+###
 # ```{rubric} Description
 # ```
 # ---

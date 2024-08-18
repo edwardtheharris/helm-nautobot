@@ -1,0 +1,9 @@
+dependencies:
+- name: redis
+  repository: file://../helm-redis
+  version: 0.0.4
+- name: postgresql
+  repository: file://../helm-postgresql
+  version: 0.0.3
+digest: sha256:e9903629c711f8d43de7e612eb7d13056af62e197abb949dc972c408cae21df6
+generated: "2024-08-18T14:11:34.210195357-07:00"
