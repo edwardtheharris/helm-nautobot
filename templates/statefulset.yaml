@@ -1,93 +1,99 @@
-{{- if eq .Values.type "StatefulSet" -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   annotations:
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: {{ .Values.nameOverride }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
   labels:
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernets.io/name: {{ .Values.nameOverride }}
-  name: {{ .Values.fullnameOverride }}
+    app.kubernets.io/name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "nautobot.name" . }}
+      app.kubernetes.io/name: {{ .Chart.Name }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-  serviceName: {{ .Values.nameOverride }}
+  serviceName: {{ .Release.Name }}
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
-      name: {{ include "nautobot.name" . }}
+      name: {{ .Chart.Name }}
       labels:
-        app.kubernetes.io/name: {{ include "nautobot.name" . }}
+        app.kubernetes.io/name: {{ .Chart.Name }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      initContainers:
-        - name: nautobot-init
-          args:
-            - 'cat /opt/.nautobot/init.sh > /bin/init.sh; chmod +x /bin/init.sh; /bin/init.sh'
-          command:
-            - /bin/bash
-            - '-c'
-          env:
-            - name: NAUTOBOT_DB_ENGINE
-              value: {{ .Values.database.engine }}
-            - name: NAUTOBOT_DB_HOST
-              value: postgresql.postgresql.svc.cluster.local
-            - name: NAUTOBOT_DB_NAME
-              value: {{ .Values.database.database }}
-            - name: NAUTOBOT_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: password
-            - name: NAUTOBOT_DB_PORT
-              value: {{ .Values.database.port | quote }}
-            - name: NAUTOBOT_DB_TIMEOUT
-              value: {{ .Values.database.timeout | quote }}
-            - name: NAUTOBOT_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
-            - name: NAUTOBOT_ROOT
-              value: /opt/nautobot
-            - name: NAUTOBOT_SUPERUSER_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: token
-            - name: NAUTOBOT_SUPERUSER_EMAIL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: email
-            - name: NAUTOBOT_SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: password
-            - name: NAUTOBOT_SUPERUSER_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: username
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: Always
-          volumeMounts:
-            - name: {{ .Values.persistence.name }}
-              mountPath: /opt/
-              subPath: nautobot
-            - name: nautobot-config
-              mountPath: /opt/.nautobot
+      nodeSelector:
+        {{ .Values.nodeSelector | toYaml | nindent 8 }}
+      # initContainers:
+      #   - name: nautobot-init
+      #     args:
+      #       - 'cat /opt/.nautobot/init.sh > /bin/init.sh; chmod +x /bin/init.sh; /bin/init.sh'
+      #     command:
+      #       - /bin/bash
+      #       - '-c'
+      #     env:
+      #       - name: NAUTOBOT_DB_ENGINE
+      #         value: {{ .Values.database.engine }}
+      #       - name: NAUTOBOT_DB_HOST
+      #         value: postgresql.postgresql.svc.cluster.local
+      #       - name: NAUTOBOT_DB_NAME
+      #         value: {{ .Values.database.database }}
+      #       - name: NAUTOBOT_DB_PASSWORD
+      #         valueFrom:
+      #           secretKeyRef:
+      #             name: secret.{{ .Values.database.name }}
+      #             key: password
+      #       - name: NAUTOBOT_DB_PORT
+      #         value: {{ .Values.database.port | quote }}
+      #       - name: NAUTOBOT_DB_TIMEOUT
+      #         value: {{ .Values.database.timeout | quote }}
+      #       - name: NAUTOBOT_DB_USER
+      #         valueFrom:
+      #           secretKeyRef:
+      #             name: secret.{{ .Values.database.name }}
+      #             key: username
+      #       - name: NAUTOBOT_ROOT
+      #         value: /opt/nautobot
+      #       - name: NAUTOBOT_SUPERUSER_API_TOKEN
+      #         valueFrom:
+      #           secretKeyRef:
+      #             name: {{ .Values.superUser.secret.name }}
+      #             key: token
+      #       - name: NAUTOBOT_SUPERUSER_EMAIL
+      #         valueFrom:
+      #           secretKeyRef:
+      #             name: {{ .Values.superUser.secret.name }}
+      #             key: email
+      #       - name: NAUTOBOT_SUPERUSER_PASSWORD
+      #         valueFrom:
+      #           secretKeyRef:
+      #             name: {{ .Values.superUser.secret.name }}
+      #             key: password
+      #       - name: NAUTOBOT_SUPERUSER_USERNAME
+      #         valueFrom:
+      #           secretKeyRef:
+      #             name: {{ .Values.superUser.secret.name }}
+      #             key: username
+      #     image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      #     imagePullPolicy: Always
+      #     volumeMounts:
+      #       - name: {{ .Values.persistence.name }}
+      #         mountPath: /opt/
+      #         subPath: nautobot
+      #       - name: nautobot-config
+      #         mountPath: /opt/.nautobot
       containers:
         - name: nautobot
           command:
-            - /opt/nautobot/bin/nautobot-server
-            - runserver
-            - '0.0.0.0:8000'
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            - /bin/sh
+            - >-
+              -c
+            - >-
+              while true; do sleep 3600; done
+            # - /opt/nautobot/bin/nautobot-server
+            # - runserver
+            # - '0.0.0.0:8000'
+          image: "ghcr.io/edwardtheharris/helm-nautobot/nautobot:0.0.3"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8000
@@ -118,8 +124,8 @@ spec:
             - name: NAUTOBOT_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: password
+                  name: {{ .Chart.Name }}-database
+                  key: nbpassword
             - name: NAUTOBOT_DB_PORT
               value: {{ .Values.database.port | quote }}
             - name: NAUTOBOT_DB_TIMEOUT
@@ -127,8 +133,8 @@ spec:
             - name: NAUTOBOT_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
+                  name: {{ .Chart.Name }}-database
+                  key: nbusername
             - name: NAUTOBOT_ROOT
               value: /opt/nautobot
             - name: NAUTOBOT_REDIS_HOST
@@ -138,12 +144,12 @@ spec:
             - name: NAUTOBOT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: secret.superuser
+                  name: {{ .Release.Name }}-superuser
                   key: secretKey
             - name: NAUTOBOT_SUPERUSER_API_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
+                  name: {{ .Release.Name }}-superuser
                   key: token
             - name: NAUTOBOT_SUPERUSER_EMAIL
               value: {{ .Values.superUser.email }}
@@ -152,32 +158,30 @@ spec:
             - name: NAUTOBOT_SUPERUSER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
+                  name: {{ .Release.Name }}-superuser
                   key: password
             - name: NAUTOBOT_TIME_ZONE
               value: 'America/Los_Angeles'
-            - name: SOCIAL_AUTH_GITHUB_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_key
-            - name: SOCIAL_AUTH_GITUB_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_secret
+            # - name: SOCIAL_AUTH_GITHUB_KEY
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: secret.github.sso
+            #       key: social_auth_github_key
+            # - name: SOCIAL_AUTH_GITUB_SECRET
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: secret.github.sso
+            #       key: social_auth_github_secret
           volumeMounts:
-            - name: {{ .Values.persistence.name }}
-              mountPath: /opt/
+            - name: nautobot
+              mountPath: /opt/nautobot
               subPath: nautobot
-            - name: {{ .Values.config.name }}
+            - name: nautobot-config
               mountPath: /opt/.nautobot
       imagePullSecrets:
-        - name: secret.github.ghcr
-      securityContext:
-        fsGroup: 1000
+        - name: ghcr
       volumes:
-        - name: {{ .Values.config.name }}
+        - name: nautobot-config
           configMap:
             name: nautobot-config
             items:
@@ -191,14 +195,24 @@ spec:
                 path: init.sh
   volumeClaimTemplates:
     - metadata:
-        name: {{ .Values.persistence.name }}
+        name: {{ .Release.Name }}
       spec:
         accessModes:
           - ReadWriteMany
           - ReadWriteOnce
         resources:
           requests:
-            storage: {{ .Values.persistence.size }}
+            storage: {{ .Values.resources.requests.storage }}
         storageClassName: {{ .Values.persistence.storageClass }}
         volumeMode: Filesystem
-{{ end }}
+    # - metadata:
+    #     name: {{ .Release.Name }}-celery
+    #   spec:
+    #     accessModes:
+    #       - ReadWriteMany
+    #       - ReadWriteOnce
+    #     resources:
+    #       requests:
+    #         storage: {{ .Values.resources.requests.storage }}
+    #     storageClassName: {{ .Values.persistence.storageClass }}
+    #     volumeMode: Filesystem

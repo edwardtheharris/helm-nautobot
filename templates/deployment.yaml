@@ -1,533 +1,113 @@
-{{- if eq .Values.type "Deployment" }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.nameOverride }}
+  name: nautobot-celery
   labels:
-    app.kubernetes.io/component: primary
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: nautobot
+    app.kubernetes.io/instance: {{ .Release.Name}}
+    app.kubernetes.io/name: {{ .Chart.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: primary
       app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/name: nautobot
+      app.kubernetes.io/name: {{ .Chart.Name}}
   template:
     metadata:
-      annotations:
-        app.kubernetes.io/component: primary
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: nautobot
       labels:
-        app.kubernetes.io/component: primary
         app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: nautobot
-      name: nautobot
+        app.kubernetes.io/name: {{ .Chart.Name }}
     spec:
-      initContainers:
-        - name: nautobot-init
-          args:
-            - 'cat /opt/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
-          command:
-            - /bin/bash
-            - '-c'
-          env:
-            - name: NAUTOBOT_DEBUG
-              value: 'True'
-            - name: NAUTOBOT_DB_ENGINE
-              value: {{ .Values.database.engine }}
-            - name: NAUTOBOT_DB_HOST
-              value: postgresql.postgresql.svc.cluster.local
-            - name: NAUTOBOT_DB_NAME
-              value: {{ .Values.database.database }}
-            - name: NAUTOBOT_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: password
-            - name: NAUTOBOT_DB_PORT
-              value: {{ .Values.database.port | quote }}
-            - name: NAUTOBOT_DB_TIMEOUT
-              value: {{ .Values.database.timeout | quote }}
-            - name: NAUTOBOT_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
-            - name: NAUTOBOT_ROOT
-              value: {{ .Values.config.root }}
-            - name: NAUTOBOT_REDIS_HOST
-              value: redis.redis.svc.cluster.local
-            - name: NAUTOBOT_REDIS_SCHEME
-              value: redis
-            - name: NAUTOBOT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.superuser
-                  key: secretKey
-            - name: NAUTOBOT_SUPERUSER_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: token
-            - name: NAUTOBOT_SUPERUSER_EMAIL
-              value: {{ .Values.superUser.email }}
-            - name: NAUTOBOT_SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: password
-            - name: NAUTOBOT_SUPERUSER_USERNAME
-              value: {{ .Values.superUser.username }}
-            - name: NAUTOBOT_TIME_ZONE
-              value: 'America/Los_Angeles'
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          volumeMounts:
-            - name: nautobot-pvc
-              mountPath: /opt/
-              subPath: nautobot
-            - name: {{ .Values.config.name }}
-              mountPath: /opt/.nautobot
-      containers:
-        - name: {{ .Values.nameOverride }}
-          args:
-            - 'apk add --no-cache sudo && sudo -E -u nautobot /opt/nautobot/bin/nautobot-server start --ini /opt/nautobot/uwsgi.ini'
-          command:
-            - /bin/bash
-            - '-c'
-          env:
-            - name: NAUTOBOT_ALLOWED_HOSTS
-              value: {{ .Values.config.allowed_hosts | quote }}
-            - name: NAUTOBOT_CELERY_BROKER_URL
-              value: {{ .Values.config.celery.broker }}
-            - name: NAUTOBOT_CELERY_RESULT_BACKEND
-              value: {{ .Values.config.celery.results }}
-            - name: NAUTOBOT_CACHES_BACKEND
-              value: {{ .Values.config.caches_backend }}
-            - name: NAUTOBOT_CREATE_SUPERUSER
-              value: {{ .Values.superUser.create | quote }}
-            - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
-              value: 'True'
-            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
-              value: 'default'
-            - name: NAUTOBOT_DEBUG
-              value: 'True'
-            - name: NAUTOBOT_DB_ENGINE
-              value: {{ .Values.database.engine }}
-            - name: NAUTOBOT_DB_HOST
-              value: postgresql.postgresql.svc.cluster.local
-            - name: NAUTOBOT_DB_NAME
-              value: {{ .Values.database.database }}
-            - name: NAUTOBOT_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: password
-            - name: NAUTOBOT_DB_PORT
-              value: {{ .Values.database.port | quote }}
-            - name: NAUTOBOT_DB_TIMEOUT
-              value: {{ .Values.database.timeout | quote }}
-            - name: NAUTOBOT_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
-            - name: NAUTOBOT_ROOT
-              value: {{ .Values.config.root }}
-            - name: NAUTOBOT_REDIS_HOST
-              value: redis.redis.svc.cluster.local
-            - name: NAUTOBOT_REDIS_SCHEME
-              value: redis
-            - name: NAUTOBOT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.superuser
-                  key: secretKey
-            - name: NAUTOBOT_SUPERUSER_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: token
-            - name: NAUTOBOT_SUPERUSER_EMAIL
-              value: {{ .Values.superUser.email }}
-            - name: NAUTOBOT_SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: password
-            - name: NAUTOBOT_SUPERUSER_USERNAME
-              value: {{ .Values.superUser.username }}
-            - name: NAUTOBOT_TIME_ZONE
-              value: 'America/Los_Angeles'
-            - name: SOCIAL_AUTH_GITHUB_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_key
-            - name: SOCIAL_AUTH_GITUB_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_secret
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
-              name: nautobot
-          volumeMounts:
-            - mountPath: /opt
-              name: nautobot-pvc
-              subPath: nautobot
-            - mountPath: /opt/.nautobot
-              name: {{ .Values.config.name }}
       imagePullSecrets:
-        - name: secret.github.ghcr
+      - name: ghcr
+      containers:
+        - name: nautobot-celery
+          command:
+          - /bin/sh
+          - >-
+            -c
+          - >-
+            while true; do sleep 3600; done
+          # command:
+          #   - /opt/celery/bin/nautobot-server
+          #   - celery
+          #   - start
+          image: ghcr.io/edwardtheharris/helm-nautobot/celery:{{ .Values.image.tag }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: stat
+              containerPort: 1024
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 250m
+              memory: 128Mi
+          volumeMounts:
+            - name: nautobot-celery-config
+              mountPath: /opt/.celery
+            - name: nautobot-celery
+              mountPath: /opt/celery/
+              subPath: celery
       volumes:
-        - name: {{ .Values.config.name}}
+        - name: nautobot-celery-config
           configMap:
-            name: {{ .Values.config.name }}
-        - name: nautobot-pvc
+            name: nautobot-celery-config
+        - name: nautobot-celery
           persistentVolumeClaim:
-            claimName: nautobot-pvc
-{{ end }}
+            claimName: celery
+      terminationGracePeriodSeconds: 60
+      dnsPolicy: ClusterFirst
+      serviceAccountName: nautobot
+      serviceAccount: nautobot
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: celery-worker
+  name: nautobot-celery-beat
   labels:
-    app.kubernetes.io/component: scheduler
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: celery-worker
-    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name}}
+    app.kubernetes.io/name: {{ .Chart.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: scheduler
       app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/name: celery-worker
-      app.kubernetes.io/part-of: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ .Chart.Name}}
   template:
     metadata:
-      annotations:
-        app.kubernetes.io/component: scheduler
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: celery-worker
-        app.kubernetes.io/part-of: {{ .Release.Name }}
       labels:
-        app.kubernetes.io/component: scheduler
         app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: celery-worker
-        app.kubernetes.io/part-of: {{ .Release.Name }}
-      name: celery-worker
+        app.kubernetes.io/name: {{ .Chart.Name }}
     spec:
       imagePullSecrets:
-        - name: secret.github.ghcr
-      initContainers:
-        - name: celery-worker-init
-          args:
-            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
-          command:
-            - /bin/bash
-            - '-c'
-          env:
-            - name: NAUTOBOT_ALLOWED_HOSTS
-              value: {{ .Values.config.allowed_hosts | quote }}
-            - name: NAUTOBOT_CELERY_BROKER_URL
-              value: {{ .Values.config.celery.broker }}
-            - name: NAUTOBOT_CELERY_RESULT_BACKEND
-              value: {{ .Values.config.celery.results }}
-            - name: NAUTOBOT_CACHES_BACKEND
-              value: {{ .Values.config.caches_backend }}
-            - name: NAUTOBOT_CREATE_SUPERUSER
-              value: {{ .Values.superUser.create | quote }}
-            - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
-              value: 'True'
-            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
-              value: 'default'
-            - name: NAUTOBOT_DEBUG
-              value: 'True'
-            - name: NAUTOBOT_ROOT
-              value: {{ .Values.config.celery.root }}
-          image: "{{ .Values.config.celery.img.repository }}:{{ .Values.config.celery.img.tag }}"
-          volumeMounts:
-            - name: celery-worker
-              mountPath: /opt/
-              subPath: celery
-            - name: {{ .Values.config.celery.name }}
-              mountPath: /opt/.celery
+        - name: ghcr
       containers:
-        - name: celery-worker
+        - name: nautobot-celery-beat
           command:
-            - /bin/bash
-            - '-c'
-          args:
-            - 'apk add --no-cache sudo && sudo -E -u celery /opt/celery/bin/nautobot-server celery worker --loglevel DEBUG --queues celery-default,default,default-celery,jobs,tasks'
-          env:
-            - name: NAUTOBOT_ALLOWED_HOSTS
-              value: {{ .Values.config.allowed_hosts | quote }}
-            - name: NAUTOBOT_CELERY_BROKER_URL
-              value: {{ .Values.config.celery.broker }}
-            - name: NAUTOBOT_CELERY_RESULT_BACKEND
-              value: {{ .Values.config.celery.results }}
-            - name: NAUTOBOT_CACHES_BACKEND
-              value: {{ .Values.config.caches_backend }}
-            - name: NAUTOBOT_CREATE_SUPERUSER
-              value: {{ .Values.superUser.create | quote }}
-            - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
-              value: 'True'
-            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
-              value: 'default'
-            - name: NAUTOBOT_DEBUG
-              value: 'True'
-            - name: NAUTOBOT_DB_ENGINE
-              value: {{ .Values.database.engine }}
-            - name: NAUTOBOT_DB_HOST
-              value: postgresql.postgresql.svc.cluster.local
-            - name: NAUTOBOT_DB_NAME
-              value: {{ .Values.database.database }}
-            - name: NAUTOBOT_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: password
-            - name: NAUTOBOT_DB_PORT
-              value: {{ .Values.database.port | quote }}
-            - name: NAUTOBOT_DB_TIMEOUT
-              value: {{ .Values.database.timeout | quote }}
-            - name: NAUTOBOT_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
-            - name: NAUTOBOT_ROOT
-              value: {{ .Values.config.celery.root }}
-            - name: NAUTOBOT_REDIS_HOST
-              value: redis.redis.svc.cluster.local
-            - name: NAUTOBOT_REDIS_SCHEME
-              value: redis
-            - name: NAUTOBOT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.superuser
-                  key: secretKey
-            - name: NAUTOBOT_SUPERUSER_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: token
-            - name: NAUTOBOT_SUPERUSER_EMAIL
-              value: {{ .Values.superUser.email }}
-            - name: NAUTOBOT_SUPERUSER_USERNAME
-              value: {{ .Values.superUser.username }}
-            - name: NAUTOBOT_SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: password
-            - name: NAUTOBOT_TIME_ZONE
-              value: 'America/Los_Angeles'
-            - name: SOCIAL_AUTH_GITHUB_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_key
-            - name: SOCIAL_AUTH_GITUB_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_secret
-          image: "{{ .Values.config.celery.img.repository }}:{{ .Values.config.celery.img.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: 5673
-              name: celery
+          - /bin/sh
+          - >-
+            -c
+          - >-
+            while true; do sleep 3600; done
+            # - /opt/celery/bin/nautobot-server
+            # - celery
+            # - beat
+          image: ghcr.io/edwardtheharris/helm-nautobot/celery:0.0.3
           volumeMounts:
-            - name: celery-worker
-              mountPath: /opt/
+            - name: nautobot-celery-beat
+              mountPath: /opt/celery/
               subPath: celery
-            - name: {{ .Values.config.celery.name }}
+            - name: nautobot-celery-config
               mountPath: /opt/.celery
       volumes:
-        - name: {{ .Values.config.celery.name }}
+        - name: nautobot-celery-config
           configMap:
-            name: {{ .Values.config.celery.name }}
-            items:
-              - key: .bashrc
-                path: .bashrc
-              - key: reqs
-                path: 'reqs'
-              - key: init.sh
-                path: init.sh
-              - key: resolv.conf
-                path: resolv.conf
-        - name: celery-worker
-          persistentVolumeClaim:
-            claimName: celery-worker
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: celery-beat
-  labels:
-    app.kubernetes.io/component: scheduler
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: celery-beat
-    app.kubernetes.io/part-of: {{ .Release.Name }}
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: scheduler
-      app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/name: celery-beat
-      app.kubernetes.io/part-of: {{ .Release.Name }}
-  template:
-    metadata:
-      annotations:
-        app.kubernetes.io/component: scheduler
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: celery-beat
-        app.kubernetes.io/part-of: {{ .Release.Name }}
-      labels:
-        app.kubernetes.io/component: scheduler
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: celery-beat
-        app.kubernetes.io/part-of: {{ .Release.Name }}
-      name: celery-beat
-    spec:
-      imagePullSecrets:
-        - name: secret.github.ghcr
-      initContainers:
-        - name: celery-beat-init
-          args:
-            - 'cat /opt/.celery/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
-          command:
-            - /bin/bash
-            - '-c'
-          env:
-            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
-              value: 'default'
-            - name: NAUTOBOT_DEBUG
-              value: 'True'
-            - name: NAUTOBOT_ROOT
-              value: {{ .Values.config.celery.root }}
-          image: "{{ .Values.config.celery.img.repository }}:{{ .Values.config.celery.img.tag }}"
-          volumeMounts:
-            - name: celery-beat
-              mountPath: /opt/
-              subPath: celery
-            - name: {{ .Values.config.celery.name }}
-              mountPath: /opt/.celery
-      containers:
-        - name: celery-beat
-          args:
-            - 'apk add --no-cache sudo && sudo -E -u celery /opt/celery/bin/nautobot-server celery beat --loglevel DEBUG'
-          command:
-            - /bin/bash
-            - '-c'
-          env:
-            - name: NAUTOBOT_ALLOWED_HOSTS
-              value: {{ .Values.config.allowed_hosts | quote }}
-            - name: NAUTOBOT_CELERY_BROKER_URL
-              value: {{ .Values.config.celery.broker }}
-            - name: NAUTOBOT_CELERY_RESULT_BACKEND
-              value: {{ .Values.config.celery.results }}
-            - name: NAUTOBOT_CACHES_BACKEND
-              value: {{ .Values.config.caches_backend }}
-            - name: NAUTOBOT_CREATE_SUPERUSER
-              value: {{ .Values.superUser.create | quote }}
-            - name: NAUTOBOT_CORS_ALLOW_ALL_ORIGINS
-              value: 'True'
-            - name: NAUTOBOT_CELERY_TASK_DEFAULT_QUEUE
-              value: 'default'
-            - name: NAUTOBOT_DEBUG
-              value: 'True'
-            - name: NAUTOBOT_DB_ENGINE
-              value: {{ .Values.database.engine }}
-            - name: NAUTOBOT_DB_HOST
-              value: postgresql.postgresql.svc.cluster.local
-            - name: NAUTOBOT_DB_NAME
-              value: {{ .Values.database.database }}
-            - name: NAUTOBOT_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: password
-            - name: NAUTOBOT_DB_PORT
-              value: {{ .Values.database.port | quote }}
-            - name: NAUTOBOT_DB_TIMEOUT
-              value: {{ .Values.database.timeout | quote }}
-            - name: NAUTOBOT_DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
-            - name: NAUTOBOT_ROOT
-              value: {{ .Values.config.celery.root }}
-            - name: NAUTOBOT_REDIS_HOST
-              value: redis.redis.svc.cluster.local
-            - name: NAUTOBOT_REDIS_SCHEME
-              value: redis
-            - name: NAUTOBOT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.superuser
-                  key: secretKey
-            - name: NAUTOBOT_SUPERUSER_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: token
-            - name: NAUTOBOT_SUPERUSER_EMAIL
-              value: {{ .Values.superUser.email }}
-            - name: NAUTOBOT_SUPERUSER_USERNAME
-              value: {{ .Values.superUser.username }}
-            - name: NAUTOBOT_SUPERUSER_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.superUser.secret.name }}
-                  key: password
-            - name: NAUTOBOT_TIME_ZONE
-              value: 'America/Los_Angeles'
-            - name: SOCIAL_AUTH_GITHUB_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_key
-            - name: SOCIAL_AUTH_GITUB_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: secret.github.sso
-                  key: social_auth_github_secret
-          image: "{{ .Values.config.celery.img.repository }}:{{ .Values.config.celery.img.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: 5672
-              name: celery-beat
-          volumeMounts:
-            - name: celery-beat
-              mountPath: /opt/
-              subPath: celery
-            - name: {{ .Values.config.celery.name }}
-              mountPath: /opt/.celery
-      volumes:
-        - name: {{ .Values.config.celery.name }}
-          configMap:
-            name: {{ .Values.config.celery.name }}
-            items:
-              - key: .bashrc
-                path: .bashrc
-              - key: reqs
-                path: 'reqs'
-              - key: init.sh
-                path: init.sh
-              - key: resolv.conf
-                path: resolv.conf
-        - name: celery-beat
+            name: nautobot-celery-config
+        - name: nautobot-celery-beat
           persistentVolumeClaim:
             claimName: celery-beat

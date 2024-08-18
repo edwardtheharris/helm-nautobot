@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.config.name }}
+  name: nautobot-config
   labels:
     app.kubernetes.io/name: nautobot
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -25,9 +25,9 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.config.celery.name }}
+  name: nautobot-celery-config
   labels:
-    app.kubernetes.io/name: celery
+    app.kubernetes.io/name: nautobot-celery-config
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   .bashrc: |-

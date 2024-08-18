@@ -11,18 +11,11 @@
 # ```{literalinclude} /values.yaml
 # :caption: affinity
 # :language: yaml
-# :start-at: "affinity:\n"
+# :start-at: "affinity: {}\n"
 # :end-before: "###\n"
 # ```
-affinity:
-  nodeAffinity:
-  requiredDuringSchedulingIgnoredDuringExecution:
-    nodeSelectorTerms:
-    - matchExpressions:
-      - key: kubernetes.io/os
-        operator: In
-        values:
-        - linux
+affinity: {}
+
 
 ###
 # ```{rubric} Autoscaling
@@ -61,7 +54,7 @@ config:
   allowed_hosts: "*"
   caches_backend: django_redis.cache.RedisCache
   celery:
-    broker: 'redis://redis.redis.svc.cluster.local:6379/0'
+    broker: 'redis://redis.breeze-blocks.net:6379/0'
     livenessProbe:
       exec:
         command:
@@ -88,43 +81,16 @@ config:
   name: nautobot-config
   root: /opt/nautobot
 
-###
-# ```{rubric} Database
-# ```
-# ---
-# Configure a relational database connection, MySQL and PostgreSQL are
-# supported.
-#
-# ```{literalinclude} /values.yaml
-# :caption: database
-# :language: yaml
-# :start-at: "database:\n"
-# :end-before: "###\n"
-# ```
 database:
   database: nautobot
   engine: django.db.backends.postgresql
-  host: postgresql.postgresql.svc.cluster.local
-  name: postgres
+  host: pg.breeze-blocks.net
+  name: nautobot
   password: ""
   port: '5432'
-  secretfile: secrets/secrets.yaml
+  secretfile: secrets/values.yaml
   timeout: '300'
   username: ""
-
-###
-# ```{rubric} Full Name Override
-# ```
-# ---
-# Override the full name of the release.
-#
-# ```{literalinclude} /values.yaml
-# :caption: fullname override
-# :language: yaml
-# :start-at: "fullnameOverride: \"nautobot\"\n"
-# :end-before: "###\n"
-# ```
-fullnameOverride: "nautobot"
 
 ###
 # ```{rubric} Container image settings
@@ -142,7 +108,7 @@ image:
   pullPolicy: Always
   repository: ghcr.io/edwardtheharris/helm-nautobot/nautobot
   # Overrides the image tag whose default is the chart appVersion.
-  tag: '0.0.2'
+  tag: '0.0.3'
   secret:
     name: ghcr
     data: ''
@@ -189,10 +155,10 @@ ingress:
   className: "nginx"
   enabled: true
   hosts:
-  - host: nautobot.svc.cluster.local
+  - host: nautobot.breeze-blocks.net
     paths:
     - path: /
-      pathType: ImplementationSpecific
+      pathType: Prefix
   tls: []
 
 ###
@@ -225,20 +191,6 @@ livenessProbe:
   timeoutSeconds: 5
 
 ###
-# ```{rubric} Name Override
-# ```
-# ---
-# Override the release name, but not quite all the way.
-#
-# ```{literalinclude} /values.yaml
-# :caption: name override
-# :language: yaml
-# :start-at: "nameOverride: \"nautobot\"\n"
-# :end-before: "###\n"
-# ```
-nameOverride: "nautobot"
-
-###
 # ```{rubric} Node Selector
 # ```
 # ---
@@ -251,7 +203,7 @@ nameOverride: "nautobot"
 # :end-before: "###\n"
 # ```
 nodeSelector:
-  kubernetes.io/os: linux
+  kubernetes.io/hostname: k8s05.breeze-blocks.net
 
 ###
 # ```{rubric} Persistence Configuration
@@ -266,9 +218,8 @@ nodeSelector:
 # :end-before: "###\n"
 # ```
 persistence:
-  name: nautobot-pvc
-  size: 10Gi
-  storageClass: csi-driver-lvm-linear
+  name: nautobot
+  storageClass: csi-lvm-linear
 
 ###
 # ```{rubric} Pod Annotations
@@ -297,7 +248,7 @@ podAnnotations: {}
 # :end-before: "###\n"
 # ```
 podLabels:
-  app: nautobot
+  app.kubernetes.io/name: nautobot
 
 ###
 # ```{rubric} Pod Security Context
@@ -321,6 +272,68 @@ podLabels:
 podSecurityContext: {}
 
 ###
+# ```{rubric} PostgreSQL settings
+# ```
+# ---
+# Enable and configure PostgreSQL.
+#
+# ```{literalinclude} /values.yaml
+# :caption: postgresql as a dependency
+# :language: yaml
+# :start-at: "postgresql:\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: postgresql chart settings
+#
+# podSecurityContext:
+#  fsGroup: 1000
+# labels:
+#   name: postgresql
+#   app.kubernetes.io/name: nautobot
+# nameOverride: postgresql
+# persistence:
+#   name: postgresql
+# database:
+#   database: nautobot
+#   engine: django.db.backends.postgresql
+#   host: postgresql.nautobot.svc.cluster.local
+#   name: nautobot
+#   password: ""
+#   port: '5432'
+#   secretfile: secrets/values.yaml
+#   timeout: '300'
+#   username: ""
+# ```
+postgresql:
+  enabled: false
+
+###
+# ```{rubric} Redis
+# ```
+# ---
+# Enable and configure Redis.
+#
+# ```{literalinclude} /values.yaml
+# :caption: redis
+# :language: yaml
+# :start-at: "redis:\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# labels:
+#   name: redis
+#   app.kubernetes.io/name: nautobot
+# nameOverride: redis
+# persistence:
+#   name: redis
+# ```
+redis:
+  enabled: false
+
+###
 # ```{rubric} Replica Count
 # ```
 # ---
@@ -329,9 +342,11 @@ podSecurityContext: {}
 # ```{literalinclude} /values.yaml
 # :caption: replicas
 # :language: yaml
-# :start-at: "replicaCount: 1\n"
+# :start-at: "replicaCount: 3\n"
 # :end-before: "###\n"
 # ```
+#
+# ```{code-block} yaml
 # readinessProbe:
 #   exec:
 #     command:
@@ -343,7 +358,8 @@ podSecurityContext: {}
 #   periodSeconds: 5 # How often to perform the probe
 #   successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful
 #   timeoutSeconds: 1 # When the probe times out
-replicaCount: 1
+# ```
+replicaCount: '1'
 
 ###
 # ```{rubric} Resource Requests and Limits
@@ -378,6 +394,11 @@ resources:
   limits:
     cpu: 2
     memory: 4096Mi
+    storage: 20Gi
+  requests:
+    cpu: 1
+    memory: 2048Mi
+    storage: 5Gi
 
 ###
 # ```{rubric} Security Context
@@ -392,6 +413,8 @@ resources:
 # :end-before: "###\n"
 # ```
 securityContext: {}
+secrets:
+  ghcr: bm90Z2h0b2tlbg==
 
 ###
 # ```{rubric} Service
@@ -419,7 +442,10 @@ service:
   enabled: true
   port: 8000
   targetPort: 8000
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerIP: 192.168.5.5
+  externalIPs:
+  - 192.168.5.15
 
 ###
 # ```{rubric} Service Account
@@ -436,7 +462,7 @@ service:
 serviceAccount:
   # Annotations to add to the service account
   annotations:
-    sa.kubernetes.io/name: nautobot
+    app.kubernetes.io/name: nautobot
   # Automatically mount a ServiceAccount's API credentials?
   automount: true
   # Specifies whether a service account should be created
@@ -477,6 +503,7 @@ superUser:
   create: true
   email: nautobot@nautobot.svc.cluster.local
   password: ""
+  name: ""
   secret:
     name: secret.superuser
   secretKey: '57evlrs^0pmu5#ys=9t6==lf6hdz&amp;$1)qq-(%f1noo_b+nsy@f'
@@ -509,7 +536,7 @@ tolerations: []
 # :start-at: "type: Deployment\n"
 # :end-before: "###\n"
 # ```
-type: Deployment
+type: StatefulSet
 
 ###
 # ```{rubric} Volume Mounts
