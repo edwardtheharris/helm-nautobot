@@ -3,32 +3,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.nameOverride }}
+  annotations:
+    {{- include "nautobot.labels" . | nindent 4 }}
   labels:
-    app.kubernetes.io/component: primary
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: nautobot
+    {{- include "nautobot.labels" . | nindent 4 }}
+  name: {{ include "nautobot.chart" . }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/component: primary
-      app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/name: nautobot
+      {{- include "nautobot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      annotations:
-        app.kubernetes.io/component: primary
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: nautobot
       labels:
-        app.kubernetes.io/component: primary
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/name: nautobot
-      name: nautobot
+        {{- include "nautobot.labels" . | nindent 8 }}
+      name: {{ .Chart.Name }}
     spec:
       initContainers:
-        - name: nautobot-init
+        - name: {{ .Chart.Name }}-init
           args:
             - 'cat /opt/.nautobot/init.sh > /bin/init.sh && chmod +x /bin/init.sh && /bin/init.sh'
           command:
@@ -40,13 +32,13 @@ spec:
             - name: NAUTOBOT_DB_ENGINE
               value: {{ .Values.database.engine }}
             - name: NAUTOBOT_DB_HOST
-              value: postgresql.postgresql.svc.cluster.local
+              value: nautobot-postgresql.postgresql.svc.cluster.local
             - name: NAUTOBOT_DB_NAME
               value: {{ .Values.database.database }}
             - name: NAUTOBOT_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
+                  name: {{ .Values.database.name }}
                   key: password
             - name: NAUTOBOT_DB_PORT
               value: {{ .Values.database.port | quote }}
@@ -55,12 +47,12 @@ spec:
             - name: NAUTOBOT_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
+                  name: {{ .Values.database.name }}
                   key: username
             - name: NAUTOBOT_ROOT
               value: {{ .Values.config.root }}
             - name: NAUTOBOT_REDIS_HOST
-              value: redis.redis.svc.cluster.local
+              value: nautobot-redis.redis.svc.cluster.local
             - name: NAUTOBOT_REDIS_SCHEME
               value: redis
             - name: NAUTOBOT_SECRET_KEY
@@ -86,13 +78,13 @@ spec:
               value: 'America/Los_Angeles'
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           volumeMounts:
-            - name: nautobot-pvc
+            - name: {{ .Release.Name }}-{{ .Chart.Name }}
               mountPath: /opt/
               subPath: nautobot
             - name: {{ .Values.config.name }}
               mountPath: /opt/.nautobot
       containers:
-        - name: {{ .Values.nameOverride }}
+        - name: {{ .Release.Name }}
           args:
             - 'apk add --no-cache sudo && sudo -E -u nautobot /opt/nautobot/bin/nautobot-server start --ini /opt/nautobot/uwsgi.ini'
           command:
@@ -179,19 +171,19 @@ spec:
               name: nautobot
           volumeMounts:
             - mountPath: /opt
-              name: nautobot-pvc
+              name: {{ .Release.Name }}-{{ .Chart.Name }}
               subPath: nautobot
             - mountPath: /opt/.nautobot
               name: {{ .Values.config.name }}
       imagePullSecrets:
-        - name: secret.github.ghcr
+        - name: ghcr
       volumes:
         - name: {{ .Values.config.name}}
           configMap:
             name: {{ .Values.config.name }}
-        - name: nautobot-pvc
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}
           persistentVolumeClaim:
-            claimName: nautobot-pvc
+            claimName: {{ include "nautobot.pvc" . | quote }}
 {{ end }}
 ---
 apiVersion: apps/v1
@@ -226,7 +218,7 @@ spec:
       name: celery-worker
     spec:
       imagePullSecrets:
-        - name: secret.github.ghcr
+        - name: ghcr
       initContainers:
         - name: celery-worker-init
           args:
@@ -293,7 +285,7 @@ spec:
             - name: NAUTOBOT_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
+                  name: {{ .Chart.Name }}
                   key: password
             - name: NAUTOBOT_DB_PORT
               value: {{ .Values.database.port | quote }}
@@ -302,8 +294,8 @@ spec:
             - name: NAUTOBOT_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: secret.{{ .Values.database.name }}
-                  key: username
+                  name: {{ .Chart.Name }}
+                  key: nbUsername
             - name: NAUTOBOT_ROOT
               value: {{ .Values.config.celery.root }}
             - name: NAUTOBOT_REDIS_HOST
@@ -401,7 +393,7 @@ spec:
       name: celery-beat
     spec:
       imagePullSecrets:
-        - name: secret.github.ghcr
+        - name: ghcr
       initContainers:
         - name: celery-beat-init
           args:

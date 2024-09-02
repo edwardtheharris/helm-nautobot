@@ -11,18 +11,11 @@
 # ```{literalinclude} /values.yaml
 # :caption: affinity
 # :language: yaml
-# :start-at: "affinity:\n"
+# :start-at: "affinity: {}\n"
 # :end-before: "###\n"
 # ```
-affinity:
-  nodeAffinity:
-  requiredDuringSchedulingIgnoredDuringExecution:
-    nodeSelectorTerms:
-    - matchExpressions:
-      - key: kubernetes.io/os
-        operator: In
-        values:
-        - linux
+affinity: {}
+
 
 ###
 # ```{rubric} Autoscaling
@@ -88,27 +81,14 @@ config:
   name: nautobot-config
   root: /opt/nautobot
 
-###
-# ```{rubric} Database
-# ```
-# ---
-# Configure a relational database connection, MySQL and PostgreSQL are
-# supported.
-#
-# ```{literalinclude} /values.yaml
-# :caption: database
-# :language: yaml
-# :start-at: "database:\n"
-# :end-before: "###\n"
-# ```
 database:
   database: nautobot
   engine: django.db.backends.postgresql
-  host: postgresql.postgresql.svc.cluster.local
+  host: postgresql.nautobot.svc.cluster.local
   name: postgres
   password: ""
   port: '5432'
-  secretfile: secrets/secrets.yaml
+  secretfile: secrets/values.yaml
   timeout: '300'
   username: ""
 
@@ -321,6 +301,81 @@ podLabels:
 podSecurityContext: {}
 
 ###
+# ```{rubric} PostgreSQL settings
+# ```
+# ---
+# Enable and configure PostgreSQL.
+#
+# ```{literalinclude} /values.yaml
+# :caption: postgresql as a dependency
+# :language: yaml
+# :start-at: "postgresql:\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# :caption: postgresql chart settings
+#
+# podSecurityContext:
+#  fsGroup: 1000
+# ```
+postgresql:
+  enabled: true
+  labels:
+    name: postgresql
+    app.kubernetes.io/name: nautobot
+  nameOverride: postgresql
+  persistence:
+    name: postgresql
+
+  ###
+  # ```{rubric} Database settings
+  # ```
+  # ---
+  # Configure dependent database.
+  #
+  # ```{literalinclude} /values.yaml
+  # :caption: database
+  # :language: yaml
+  # :start-at: "database:\n"
+  # :end-before: "###\n"
+  # ```
+  database:
+    database: nautobot
+    engine: django.db.backends.postgresql
+    host: postgresql.nautobot.svc.cluster.local
+    name: nautobot
+    password: ""
+    port: '5432'
+    secretfile: secrets/values.yaml
+    timeout: '300'
+    username: ""
+
+###
+# ```{rubric} Redis
+# ```
+# ---
+# Enable and configure Redis.
+#
+# ```{literalinclude} /values.yaml
+# :caption: redis
+# :language: yaml
+# :start-at: "redis:\n"
+# :end-before: "###\n"
+# ```
+#
+# ```{code-block} yaml
+# ```
+redis:
+  enabled: true
+  labels:
+    name: redis
+    app.kubernetes.io/name: nautobot
+  nameOverride: redis
+  persistence:
+    name: redis
+
+###
 # ```{rubric} Replica Count
 # ```
 # ---
@@ -329,9 +384,11 @@ podSecurityContext: {}
 # ```{literalinclude} /values.yaml
 # :caption: replicas
 # :language: yaml
-# :start-at: "replicaCount: 1\n"
+# :start-at: "replicaCount: 3\n"
 # :end-before: "###\n"
 # ```
+#
+# ```{code-block} yaml
 # readinessProbe:
 #   exec:
 #     command:
@@ -343,7 +400,8 @@ podSecurityContext: {}
 #   periodSeconds: 5 # How often to perform the probe
 #   successThreshold: 1 # Minimum consecutive successes for the probe to be considered successful
 #   timeoutSeconds: 1 # When the probe times out
-replicaCount: 1
+# ```
+replicaCount: '1'
 
 ###
 # ```{rubric} Resource Requests and Limits
