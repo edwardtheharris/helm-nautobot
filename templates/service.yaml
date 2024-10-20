@@ -2,23 +2,26 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.nameOverride }}
+  name: {{ .Release.Name }}
   labels:
     app.kubernetes.io/component: primary
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: nautobot
+    app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/part-of: nautobot
 spec:
-  type: {{ .Values.service.type }}
+  type: LoadBalancer
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: nautobot
+  loadBalancerIP: 192.168.5.5
+  externalIPs:
+    - 192.168.5.15
   selector:
     app.kubernetes.io/component: primary
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/name: nautobot
+    app.kubernetes.io/name: {{ .Chart.Name }}
 ---
 apiVersion: v1
 kind: Service
@@ -28,7 +31,7 @@ metadata:
     app.kubernetes.io/component: scheduler
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/name: celery-beat
-    app.kubernetes.io/part-of: nautobot
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -61,4 +64,4 @@ spec:
     app.kubernetes.io/component: scheduler
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/name: celery-worker
-{{ end }}
+{{- end -}}

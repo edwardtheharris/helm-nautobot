@@ -8,3 +8,4 @@ _build
 gh.gpg
 secrets/
 test.yaml
+charts/
